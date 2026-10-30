@@ -236,6 +236,38 @@ canvas.meter { width: 100%; height: 64px; display: block; background: #FBF4EC; b
 .plus-idle { background: var(--ink); color: #fff; }
 .plus-soft { background: #F2EBE3; color: var(--ink); }
 
+/* --- Luyện nói tự động: mỗi trạng thái có màu và biểu tượng riêng --- */
+.status { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 8px 14px; border-radius: var(--radius-sm); font-weight: 700; text-align: center; }
+.st-idle { background: #F2EBE3; color: var(--ink); }
+.st-model { background: #E4ECFD; color: #1E3A8A; }
+.st-turn { background: var(--primary); color: #fff; }
+.st-listen { background: var(--primary-soft); color: #6E2415; box-shadow: inset 0 0 0 2px var(--primary); }
+.st-listen svg.ic { animation: pulse 1.1s infinite; }
+.st-near { background: var(--warn-soft); color: #5F3A00; }
+.st-wrong { background: #F5E6F2; color: #6B2160; }
+.st-good { background: var(--good); color: #fff; animation: pop .3s ease; }
+.st-move { background: var(--good-soft); color: #084C46; }
+.st-pause { background: #E9EDF2; color: var(--ink); }
+.st-bad { background: var(--danger-soft); color: #7A1A12; }
+.sentence .ipa { margin-top: 2px; color: var(--muted); font-family: "Segoe UI", "Lucida Sans Unicode", "Noto Sans", "DejaVu Sans", var(--font); }
+.live { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+canvas.wave { width: 100%; height: 44px; display: block; background: #FBF4EC; border-radius: 12px; }
+.fake-wave { height: 44px; display: flex; align-items: center; justify-content: center; gap: 5px; background: #FBF4EC; border-radius: 12px; }
+.fake-wave i { width: 5px; height: 10px; border-radius: 3px; background: var(--primary); opacity: .35; }
+.fake-wave.on i { opacity: 1; animation: waveBar .8s ease-in-out infinite; }
+.fake-wave i:nth-child(2) { animation-delay: .1s; } .fake-wave i:nth-child(3) { animation-delay: .2s; }
+.fake-wave i:nth-child(4) { animation-delay: .3s; } .fake-wave i:nth-child(5) { animation-delay: .4s; }
+@keyframes waveBar { 50% { height: 32px; } }
+.interim { min-height: 1.5em; text-align: center; font-size: 1.0625rem; color: var(--muted); font-style: italic; overflow-wrap: anywhere; }
+.compare { display: grid; gap: 6px; font-size: .9375rem; }
+.compare b { display: block; font-size: .8125rem; font-weight: 600; color: var(--muted); }
+.compare span { font-weight: 600; overflow-wrap: anywhere; }
+.lesson-dock .tools { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.tool { min-height: 58px; border-radius: 14px; font-size: .8125rem; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 2px; box-shadow: inset 0 0 0 1.5px var(--line); }
+.tool:disabled { opacity: .4; }
+.lesson-pad { padding-bottom: 110px; }
+.first-note { text-align: center; font-size: .875rem; color: var(--muted); }
+
 /* --- Flashcard --- */
 .fc-scene { perspective: 1200px; }
 .fc { display: grid; width: 100%; transform-style: preserve-3d; transition: transform .5s cubic-bezier(.3, .7, .3, 1); cursor: pointer; animation: fadeUp .25s ease-out; }
@@ -315,7 +347,7 @@ canvas.meter { width: 100%; height: 64px; display: block; background: #FBF4EC; b
   .sentence .en { font-size: 3rem; }
   .sentence .en.long { font-size: 2.5rem; }
   .dock-in { max-width: 968px; grid-template-columns: 1fr 1fr; align-items: center; gap: 22px; }
-  .dock-btns { grid-template-columns: 96px 1fr 96px; }
+  .lesson-dock .dock-in { grid-template-columns: 1fr; max-width: 640px; }
   .dock-simple .dock-in { grid-template-columns: 1fr; max-width: 560px; }
   .progress-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
   .progress-grid > .wide { grid-column: 1 / -1; }
@@ -357,6 +389,10 @@ canvas.meter { width: 100%; height: 64px; display: block; background: #FBF4EC; b
    PHẦN 1: DỮ LIỆU HỌC TẬP
    Muốn thêm chủ đề: thêm một phần tử mới vào mảng TOPICS, giao diện tự cập nhật.
    Tiến độ lưu theo id chủ đề + vị trí câu, nên hãy thêm câu mới vào CUỐI danh sách.
+   Trường tùy chọn của mỗi câu:
+     ipa: "/.../"        phiên âm hiển thị dưới câu
+     accepts: ["..."]    các cách nói tương đương được chấm là đúng
+     keywords: ["..."]   từ bắt buộc phải có; nếu bỏ trống, app tự lấy các từ mang nghĩa
    ============================================================ */
 const TOPICS = [
   {
@@ -364,12 +400,12 @@ const TOPICS = [
     sentences: [
       { en: "Hello, nice to meet you.", vi: "Xin chào, rất vui được gặp bạn." },
       { en: "What is your name?", vi: "Bạn tên là gì?" },
-      { en: "My name is Anna.", vi: "Tôi tên là Anna." },
+      { en: "My name is Anna.", vi: "Tôi tên là Anna.", accepts: ["my name is ana", "my name is hannah", "my name is anne"] },
       { en: "How are you today?", vi: "Hôm nay bạn thế nào?" },
       { en: "I am fine, thank you.", vi: "Tôi khỏe, cảm ơn bạn." },
       { en: "Where are you from?", vi: "Bạn đến từ đâu?" },
       { en: "I am from Vietnam.", vi: "Tôi đến từ Việt Nam." },
-      { en: "See you tomorrow. Goodbye!", vi: "Hẹn gặp bạn ngày mai. Tạm biệt!" }
+      { en: "See you tomorrow. Goodbye!", vi: "Hẹn gặp bạn ngày mai. Tạm biệt!", accepts: ["see you tomorrow bye"] }
     ],
     words: [
       { word: "hello", ipa: "/həˈloʊ/", vi: "xin chào", ex: "Hello, Tom!", exVi: "Xin chào, Tom!" },
@@ -411,7 +447,7 @@ const TOPICS = [
       { en: "I am very hungry.", vi: "Tôi đói quá." },
       { en: "What do you want to eat?", vi: "Bạn muốn ăn gì?" },
       { en: "I would like some rice.", vi: "Tôi muốn một ít cơm." },
-      { en: "Can I have a coffee, please?", vi: "Cho tôi một ly cà phê nhé?" },
+      { en: "Can I have a coffee, please?", vi: "Cho tôi một ly cà phê nhé?", accepts: ["can i have coffee please"] },
       { en: "This soup is very good.", vi: "Món súp này rất ngon." },
       { en: "I drink water every day.", vi: "Tôi uống nước mỗi ngày." },
       { en: "Do you like chicken?", vi: "Bạn có thích thịt gà không?" },
@@ -491,13 +527,12 @@ const QUOTES = [
 ];
 
 /* Cấu hình chung */
-const TARGET_REPS = 20;
 const CHALLENGE_MS = 5 * 60 * 1000;
 const STORE_KEY = "annaEnglish.v1";
 const SPEEDS = {
-  slow: { label: "Chậm", rate: 0.6 },
-  normal: { label: "Bình thường", rate: 0.9 },
-  fast: { label: "Nhanh", rate: 1.2 }
+  slow: { label: "Chậm 0.7x", rate: 0.7 },
+  normal: { label: "Vừa 1.0x", rate: 1.0 },
+  fast: { label: "Nhanh 1.2x", rate: 1.2 }
 };
 const MAX_RECORD_SECONDS = 60;
 const LOUD_TARGET = 0.6;   // vạch mục tiêu trên thang âm lượng 0–1
@@ -507,7 +542,9 @@ const QUIET_LEVEL = 0.12;  // dưới mức này coi như đang im lặng
    PHẦN 2: LƯU TRỮ VÀ TIẾN ĐỘ (localStorage)
    ============================================================ */
 const defaultState = () => ({
-  sentences: {},      // "greetings:0" -> số lần đã luyện
+  sentences: {},      // "greetings:0" -> số lần nói trong thử thách (và dữ liệu bản cũ)
+  sp: {},             // "greetings:0" -> { status, attempts, successes, firstResult, completedAt, seconds, lastHeard, review }
+  spMigrated: false,
   words: {},          // "greetings:0" -> { status: "known" | "learning", wrong: số lần chưa nhớ }
   days: {},           // "2026-10-30" -> { seconds, reps }
   last: null,         // { topicId, index } – câu đang học dở
@@ -526,6 +563,19 @@ const defaultState = () => ({
   challengeBest: 0
 });
 
+/* Chuyển dữ liệu bản cũ (đếm 20 lần): câu đủ 20 lần coi như đã hoàn thành, câu đang dở coi như đang học */
+function migrate(data) {
+  if (data.spMigrated) return data;
+  Object.entries(data.sentences || {}).forEach(([k, reps]) => {
+    if (data.sp[k]) return;
+    data.sp[k] = reps >= 20
+      ? { status: "done", attempts: 0, successes: 1, firstResult: "legacy", completedAt: Date.now(), seconds: 0, lastHeard: "", review: false }
+      : { status: "doing", attempts: 0, successes: 0, firstResult: null, completedAt: null, seconds: 0, lastHeard: "", review: false };
+  });
+  data.spMigrated = true;
+  return data;
+}
+
 let storageOk = true;
 function loadState() {
   try {
@@ -533,7 +583,7 @@ function loadState() {
     if (!raw) return defaultState();
     const data = JSON.parse(raw);
     if (!data || typeof data !== "object") return defaultState();
-    return Object.assign(defaultState(), data);
+    return migrate(Object.assign(defaultState(), data));
   } catch (e) {
     // Trình duyệt chặn bộ nhớ hoặc dữ liệu hỏng: chạy với dữ liệu trống thay vì để ứng dụng lỗi
     storageOk = isStorageWritable();
@@ -574,7 +624,18 @@ const repsOf = (tid, i) => state.sentences[sKey(tid, i)] || 0;
 const isKnown = (tid, i) => (state.words[sKey(tid, i)] || {}).status === "known";
 const totalSentences = () => TOPICS.reduce((n, t) => n + t.sentences.length, 0);
 const totalWords = () => TOPICS.reduce((n, t) => n + t.words.length, 0);
-const doneInTopic = (t) => t.sentences.filter((_, i) => repsOf(t.id, i) >= TARGET_REPS).length;
+const spOf = (tid, i) => state.sp[sKey(tid, i)] || null;
+const isDone = (tid, i) => !!(spOf(tid, i) && spOf(tid, i).completedAt);
+const needsReview = (tid, i) => { const r = spOf(tid, i); return !!r && (r.review || r.status === "review"); };
+/* Câu còn phải học: chưa hoàn thành và chưa bị bỏ qua sang danh sách ôn */
+const isOpen = (tid, i) => { const r = spOf(tid, i); return !r || (!r.completedAt && r.status !== "review"); };
+const reviewList = (t) => t.sentences.map((_, i) => i).filter((i) => needsReview(t.id, i))
+  .sort((a, b) => (spOf(t.id, b).attempts || 0) - (spOf(t.id, a).attempts || 0));
+const doneInTopic = (t) => t.sentences.filter((_, i) => isDone(t.id, i)).length;
+const topicHref = (t) => {
+  const i = t.sentences.findIndex((_, x) => isOpen(t.id, x));
+  return i >= 0 ? `#/practice/${t.id}/${i}` : `#/finish/${t.id}`;
+};
 const knownInTopic = (t) => t.words.filter((_, i) => isKnown(t.id, i)).length;
 const doneTotal = () => TOPICS.reduce((n, t) => n + doneInTopic(t), 0);
 const knownTotal = () => TOPICS.reduce((n, t) => n + knownInTopic(t), 0);
@@ -585,23 +646,18 @@ const learningWords = () => {
   }));
   return list;
 };
-/* Thanh tiến độ tính cả lượt đã luyện dở để người học thấy công sức của mình */
 function topicPercent(t) {
   if (!t.sentences.length) return 0;
-  const reps = t.sentences.reduce((n, _, i) => n + Math.min(repsOf(t.id, i), TARGET_REPS), 0);
-  return Math.round(reps / (t.sentences.length * TARGET_REPS) * 100);
+  return Math.round(doneInTopic(t) / t.sentences.length * 100);
 }
 function topicStatus(t) {
   if (t.sentences.length && doneInTopic(t) === t.sentences.length) return "done";
-  const touched = t.sentences.some((_, i) => repsOf(t.id, i) > 0) || t.words.some((_, i) => state.words[sKey(t.id, i)]);
+  const touched = t.sentences.some((_, i) => spOf(t.id, i) || repsOf(t.id, i) > 0) || t.words.some((_, i) => state.words[sKey(t.id, i)]);
   return touched ? "doing" : "new";
 }
 function overallPercent() {
   const units = totalSentences() + totalWords();
-  if (!units) return 0;
-  let score = knownTotal();
-  TOPICS.forEach((t) => t.sentences.forEach((_, i) => { score += Math.min(repsOf(t.id, i), TARGET_REPS) / TARGET_REPS; }));
-  return Math.round(score / units * 100);
+  return units ? Math.round((doneTotal() + knownTotal()) / units * 100) : 0;
 }
 /* Chuỗi ngày chỉ còn hiệu lực nếu học hôm nay hoặc hôm qua */
 function currentStreak() {
@@ -625,7 +681,7 @@ function addRep(t, i) {
   state.totalReps++;
   recordActivity();
   save();
-  return { count, justDone: count === TARGET_REPS };
+  return count;
 }
 /* Trao huy hiệu một lần duy nhất khi hoàn thành tất cả các câu của chủ đề */
 function awardBadgeIfNew(t) {
@@ -636,20 +692,103 @@ function awardBadgeIfNew(t) {
   }
   return false;
 }
-/* Nơi người học nên quay lại: câu dở, rồi câu chưa xong kế tiếp, rồi chủ đề khác */
+/* Nơi người học nên quay lại: câu đang dở, rồi câu chưa học, rồi câu cần ôn */
 function resumeTarget() {
   if (!TOPICS.length) return null;
   const last = state.last && topicById(state.last.topicId);
   if (last && last.sentences[state.last.index]) {
-    if (repsOf(last.id, state.last.index) < TARGET_REPS) return { t: last, i: state.last.index, started: true };
-    const next = last.sentences.findIndex((_, i) => repsOf(last.id, i) < TARGET_REPS);
+    if (isOpen(last.id, state.last.index)) return { t: last, i: state.last.index, started: true };
+    const next = last.sentences.findIndex((_, i) => isOpen(last.id, i));
     if (next >= 0) return { t: last, i: next, started: true };
   }
   for (const t of TOPICS) {
-    const i = t.sentences.findIndex((_, x) => repsOf(t.id, x) < TARGET_REPS);
+    const i = t.sentences.findIndex((_, x) => isOpen(t.id, x));
     if (i >= 0) return { t, i, started: !!state.last };
   }
   return { t: TOPICS[0], i: 0, started: true, allDone: true };
+}
+
+/* ============================================================
+   PHẦN 2B: CHẤM CÂU NÓI
+   So sánh theo từ (Levenshtein), từ gần giống chỉ tính một phần lỗi,
+   và luôn kiểm tra từ khóa để không chấp nhận câu thiếu ý.
+   ============================================================ */
+const NUMBER_WORDS = { 0: "zero", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten", 11: "eleven", 12: "twelve", 20: "twenty" };
+const CONTRACTIONS = {
+  "i'm": "i am", "you're": "you are", "we're": "we are", "they're": "they are", "he's": "he is", "she's": "she is", "it's": "it is",
+  "what's": "what is", "where's": "where is", "here's": "here is", "that's": "that is", "how's": "how is",
+  "don't": "do not", "doesn't": "does not", "can't": "can not", "cannot": "can not", "isn't": "is not", "aren't": "are not",
+  "i'd": "i would", "i'll": "i will", "you'll": "you will", "we'll": "we will", "i've": "i have", "o'clock": ""
+};
+/* Từ đồng âm: bộ nhận diện không phân biệt được nên không tính là lỗi của người học */
+const HOMOPHONES = {
+  meat: "meet", two: "to", too: "to", buy: "by", bye: "by", sea: "see", sun: "son", their: "there", they: "they", hear: "here", blew: "blue",
+  won: "one", wear: "where", hour: "our", ate: "eight", sum: "some", write: "right", red: "red", read: "red", four: "for", tea: "tea"
+};
+const STOP_WORDS = new Set(["a", "an", "the", "is", "am", "are", "to", "at", "in", "of", "by", "do", "does", "and", "very", "please", "i", "it", "this", "you", "your", "my", "our", "we"]);
+function normalizeSpeech(text) {
+  let t = String(text).toLowerCase().replace(/[’‘`]/g, "'");
+  t = t.replace(/\b(\d{1,2}):00\b/g, "$1").replace(/\bt\.?\s?v\.?(?=\s|$)/g, "tv");
+  t = t.replace(/\bgood bye\b/g, "goodbye").replace(/\bviet nam\b/g, "vietnam").replace(/\bo clock\b/g, "");
+  t = t.split(/\s+/).map((w) => {
+    const clean = w.replace(/^[^a-z0-9']+|[^a-z0-9']+$/g, "");
+    return CONTRACTIONS[clean] !== undefined ? CONTRACTIONS[clean] : clean;
+  }).join(" ");
+  t = t.replace(/\b\d+\b/g, (n) => NUMBER_WORDS[n] || n).replace(/[^a-z0-9\s]/g, " ");
+  return t.split(/\s+/).filter(Boolean).map((w) => (w === "goodbye" ? w : HOMOPHONES[w] || w));
+}
+function charDistance(a, b) {
+  const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = row[0];
+    row[0] = i;
+    for (let j = 1; j <= b.length; j++) {
+      const tmp = row[j];
+      row[j] = Math.min(row[j] + 1, row[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = tmp;
+    }
+  }
+  return row[b.length];
+}
+/* Từ khác nhau từ một nửa số chữ trở lên được tính là sai hẳn một từ */
+function wordCost(a, b) {
+  if (a === b) return 0;
+  const ratio = charDistance(a, b) / Math.max(a.length, b.length);
+  return ratio >= 0.5 ? 1 : ratio;
+}
+/* Sai từ không mang nghĩa (a, the, my…) chỉ tính nửa lỗi; nếu không, câu ngắn sai một từ nhỏ sẽ không bao giờ đạt mức "gần đúng" */
+const wordWeight = (w) => (STOP_WORDS.has(w) ? 0.5 : 1);
+function wordSimilarity(said, target) {
+  const row = [0];
+  for (let j = 1; j <= target.length; j++) row[j] = row[j - 1] + wordWeight(target[j - 1]);
+  for (let i = 1; i <= said.length; i++) {
+    let prev = row[0];
+    row[0] += wordWeight(said[i - 1]);
+    for (let j = 1; j <= target.length; j++) {
+      const tmp = row[j];
+      const swap = wordCost(said[i - 1], target[j - 1]) * wordWeight(target[j - 1]);
+      row[j] = Math.min(row[j] + wordWeight(said[i - 1]), row[j - 1] + wordWeight(target[j - 1]), prev + swap);
+      prev = tmp;
+    }
+  }
+  const longest = Math.max(said.length, target.length);
+  return longest ? 1 - row[target.length] / longest : 0;
+}
+function missingKeywords(said, sentence, targetWords) {
+  const keys = sentence.keywords ? sentence.keywords.flatMap(normalizeSpeech) : targetWords.filter((w) => !STOP_WORDS.has(w));
+  return keys.filter((k) => !said.some((w) => w === k || (k.length > 3 && wordCost(w, k) <= 0.25)));
+}
+/* Kết quả: { level: "correct" | "near" | "wrong", score } */
+function gradeSpeech(text, sentence) {
+  const said = normalizeSpeech(text);
+  const main = normalizeSpeech(sentence.en);
+  const accepted = [main, ...(sentence.accepts || []).map(normalizeSpeech)];
+  if (accepted.some((w) => w.join(" ") === said.join(" ") && w.length)) return { level: "correct", score: 1 };
+  const score = wordSimilarity(said, main);
+  const missing = missingKeywords(said, sentence, main);
+  if (score >= 0.95 && !missing.length) return { level: "correct", score };
+  if (score >= 0.85 && !missing.length) return { level: "near", score };
+  return { level: "wrong", score };
 }
 
 /* ============================================================
@@ -756,7 +895,7 @@ const Mic = {
 
     const live = { measuring: false, recording: false };
     try { live.measuring = this.startMeter(session); } catch (e) { live.measuring = false; }
-    try { live.recording = this.startRecorder(session); } catch (e) { live.recording = false; }
+    try { live.recording = cb.meterOnly ? false : this.startRecorder(session); } catch (e) { live.recording = false; }
     cb.onLive(live);
   },
   startMeter(session) {
@@ -815,15 +954,83 @@ const Mic = {
   }
 };
 
+/* --- Nhận diện giọng nói: bảo đảm mỗi lúc chỉ có MỘT phiên chạy --- */
+const Recog = {
+  Ctor: window.SpeechRecognition || window.webkitSpeechRecognition || null,
+  current: null, pending: null, releaseTimer: 0,
+  get supported() { return !!this.Ctor; },
+  /* cb gồm: onSpeech(), onInterim(text), onFinal([các phương án]), onError(mã), onEnd() */
+  start(cb) {
+    this.pending = cb;
+    if (this.current) {
+      this.stop();
+      // Phòng khi trình duyệt không báo onend sau khi hủy phiên
+      clearTimeout(this.releaseTimer);
+      this.releaseTimer = setTimeout(() => { this.current = null; this.runPending(); }, 600);
+      return;
+    }
+    this.runPending();
+  },
+  runPending() {
+    const cb = this.pending;
+    this.pending = null;
+    if (!cb) return;
+    const r = new this.Ctor();
+    r.lang = "en-US";
+    r.continuous = false;       // một lượt nói; trình duyệt tự kết thúc khi người học ngừng nói
+    r.interimResults = true;
+    r.maxAlternatives = 4;
+    const session = { r, cb, dead: false };
+    this.current = session;
+    r.onspeechstart = r.onsoundstart = () => { if (!session.dead) cb.onSpeech(); };
+    r.onresult = (e) => {
+      if (session.dead) return;
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const res = e.results[i];
+        if (res.isFinal) {
+          const alts = [];
+          for (let k = 0; k < res.length; k++) alts.push(res[k].transcript);
+          session.dead = true;      // chống chấm trùng khi trình duyệt báo nhiều kết quả cuối
+          cb.onFinal(alts);
+          return;
+        }
+        interim += res[0].transcript;
+      }
+      if (interim) cb.onInterim(interim);
+    };
+    r.onerror = (e) => { if (!session.dead && e.error !== "aborted") cb.onError(e.error); };
+    r.onend = () => {
+      const wasCurrent = this.current === session;
+      if (wasCurrent) { this.current = null; clearTimeout(this.releaseTimer); }
+      if (!session.dead) { session.dead = true; cb.onEnd(); }
+      if (wasCurrent) this.runPending();
+    };
+    try { r.start(); }
+    catch (e) { this.current = null; session.dead = true; cb.onError("start-failed"); }
+  },
+  /* Hủy phiên hiện tại, kết quả đến muộn sẽ bị bỏ qua */
+  stop() {
+    this.pending = null;
+    const s = this.current;
+    if (!s) return;
+    s.dead = true;
+    try { s.r.abort(); } catch (e) {}
+  }
+};
+/* Trên điện thoại micro thường chỉ phục vụ được một nơi, nên không đo âm lượng song song với nhận diện */
+let meterAllowed = !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+let micReady = false;
+
 const MIC_ERRORS = {
   denied: {
     title: "Chưa cấp quyền micro",
-    text: "Nhấn biểu tượng ổ khóa cạnh địa chỉ trang, cho phép dùng micro rồi thử lại. Bạn vẫn có thể nói thành tiếng và nhấn +1.",
+    text: "Nhấn biểu tượng ổ khóa cạnh địa chỉ trang, cho phép dùng micro rồi thử lại. Bạn vẫn có thể chọn Luyện thủ công.",
     retry: true
   },
   nomic: {
     title: "Không tìm thấy micro",
-    text: "Hãy cắm tai nghe có micro hoặc dùng điện thoại. Bạn vẫn có thể nói thành tiếng và nhấn +1.",
+    text: "Hãy cắm tai nghe có micro hoặc dùng điện thoại. Bạn vẫn có thể chọn Luyện thủ công.",
     retry: true
   },
   busy: {
@@ -838,7 +1045,7 @@ const MIC_ERRORS = {
   },
   unsupported: {
     title: "Trình duyệt không hỗ trợ micro",
-    text: "Hãy dùng Chrome, Edge hoặc Safari bản mới. Bạn vẫn có thể nghe mẫu, nói thành tiếng và nhấn +1.",
+    text: "Hãy dùng Chrome, Edge hoặc Safari bản mới. Bạn vẫn có thể chọn Luyện thủ công.",
     retry: false
   },
   unknown: {
@@ -879,6 +1086,9 @@ const ICONS = {
   bolt: '<path d="M13 2L4.5 13.5H11L10 22l9-12h-6.5z"/>',
   warn: '<path d="M12 3l10 18H2z"/><path d="M12 10v5"/><path d="M12 18v.01"/>',
   x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  pause: '<path d="M8 5v14M16 5v14"/>',
+  skip: '<path d="M5 5l10 7-10 7z"/><path d="M19 5v14"/>',
+  smile: '<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0"/><path d="M9 9.5v.01M15 9.5v.01"/>',
   list: '<path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6v.01M3.5 12v.01M3.5 18v.01"/>'
 };
 const bar = (pct, cls = "") =>
@@ -1000,6 +1210,8 @@ function renderHome() {
   const goalDone = today.seconds >= state.goalMin * 60;
   const ch = state.challenge;
   const sentence = target.t.sentences[target.i];
+  const reviewTopic = TOPICS.find((t) => reviewList(t).length);
+  const reviewCount = TOPICS.reduce((n, t) => n + reviewList(t).length, 0);
   view.innerHTML = `<div class="screen stack">
     ${storageNotice()}
     ${window.isSecureContext === false ? `<div class="notice notice-warn">${ic("warn")}<div><b>Micro chưa dùng được trên địa chỉ này</b>Trình duyệt chỉ cho dùng micro trên https hoặc localhost. Các phần còn lại vẫn hoạt động.</div></div>` : ""}
@@ -1012,8 +1224,8 @@ function renderHome() {
         <section class="card resume">
           <p class="eyebrow">${target.allDone ? "Bạn đã hoàn thành toàn bộ câu 🎉" : target.started ? "Tiếp tục học" : "Bài đầu tiên của bạn"}</p>
           <p class="topic-line">${target.t.icon} ${esc(target.t.vi)} · Câu ${target.i + 1}/${target.t.sentences.length}</p>
-          <p class="sent">${esc(sentence.en)} · ${repsOf(target.t.id, target.i)}/${TARGET_REPS} lần</p>
-          <a class="btn btn-primary btn-lg btn-block" href="#/practice/${target.t.id}/${target.i}">${ic("mic")}Bắt đầu học ngay</a>
+          <p class="sent" lang="en">${esc(sentence.en)}</p>
+          <a class="btn btn-primary btn-lg btn-block" href="${target.allDone ? `#/finish/${target.t.id}` : `#/practice/${target.t.id}/${target.i}`}">${ic("mic")}Bắt đầu học ngay</a>
         </section>
         <section class="card goal">
           ${goalRing()}
@@ -1033,6 +1245,11 @@ function renderHome() {
           <div class="row between"><p class="subtitle">Tiến độ chương trình</p><b>${overallPercent()}%</b></div>
           ${bar(overallPercent())}
         </section>
+        ${reviewTopic ? `<a class="card challenge-link" href="#/finish/${reviewTopic.id}">
+          <span class="ico">${ic("redo")}</span>
+          <span class="grow"><b>Ôn ${reviewCount} câu chưa nhớ</b><br><span class="muted small">Luyện lại những câu còn khó</span></span>
+          ${ic("next")}
+        </a>` : ""}
         <a class="card challenge-link" href="#/challenge">
           <span class="ico">${ic("bolt")}</span>
           <span class="grow"><b>${ch ? "Tiếp tục thử thách" : "Thử thách 5 phút"}</b><br><span class="muted small">Nghe nhanh, nói theo, tăng phản xạ</span></span>
@@ -1058,8 +1275,7 @@ function renderTopics() {
     <div class="topic-grid">${TOPICS.map((t) => {
       const pct = topicPercent(t);
       const st = topicStatus(t);
-      const first = t.sentences.findIndex((_, i) => repsOf(t.id, i) < TARGET_REPS);
-      return `<a class="card topic-card" href="#/practice/${t.id}/${first < 0 ? 0 : first}">
+      return `<a class="card topic-card" href="${topicHref(t)}">
         <div class="row" style="align-items:flex-start;margin-bottom:12px">
           <span class="topic-ico" aria-hidden="true">${t.icon}</span>
           <div style="min-width:0"><h3 lang="en">${esc(t.en)}</h3><p class="muted small">${esc(t.vi)}</p></div>
@@ -1074,76 +1290,109 @@ function renderTopics() {
   </div>`;
 }
 
-/* --- 5.3 Màn hình luyện câu --- */
-let P = null;              // trạng thái của màn hình luyện hiện tại
+/* --- 5.3 Màn hình luyện nói tự động ---
+   Luồng: Nghe mẫu -> Đến lượt bạn -> Đang nghe -> Chấm -> (đúng) tự chuyển câu và lặp lại.
+   Mọi việc chạy ngầm đều gắn với P.run: khi tăng P.run, các việc cũ sẽ tự bỏ qua. */
+let P = null;                // trạng thái của câu đang luyện
 let practiceSessionReps = 0;
+let autoRun = false;         // true sau khi người học nhấn "Nghe mẫu", để các câu sau tự chạy
+let lessonSeen = new Set();  // các câu đã đi qua trong lượt ôn, tránh lặp vô hạn
+let manualPreferred = false; // người học đã chọn luyện thủ công vì nhận diện gặp lỗi
 
-function renderPractice(topicId, rawIndex) {
+const SILENCE_NUDGE_MS = 5000;
+const MAX_SILENT_ROUNDS = 3;
+const PHASES = {
+  ready: { label: "Sẵn sàng học", icon: "play", cls: "st-idle" },
+  perm: { label: "Hãy chọn Cho phép để bật micro", icon: "mic", cls: "st-turn" },
+  model: { label: "Đang nghe mẫu", icon: "sound", cls: "st-model" },
+  turn: { label: "Đến lượt bạn nói", icon: "mic", cls: "st-turn" },
+  listening: { label: "Đang nghe bạn nói", icon: "mic", cls: "st-listen" },
+  near: { label: "Gần đúng rồi! Hãy thử lại nhé", icon: "smile", cls: "st-near" },
+  wrong: { label: "Chưa chính xác, bạn hãy nghe và nói lại nhé", icon: "redo", cls: "st-wrong" },
+  correct: { label: "Excellent! Chính xác rồi!", icon: "check", cls: "st-good" },
+  moving: { label: "Đang chuyển câu", icon: "next", cls: "st-move" },
+  paused: { label: "Đã tạm dừng", icon: "pause", cls: "st-pause" },
+  held: { label: "Micro đang nghỉ. Nhấn Nói lại khi bạn sẵn sàng", icon: "pause", cls: "st-pause" },
+  error: { label: "Chưa luyện nói được", icon: "warn", cls: "st-bad" }
+};
+const ACTIVE_PHASES = ["perm", "model", "turn", "listening", "near", "wrong", "correct", "moving"];
+const RECOG_ERRORS = {
+  denied: MIC_ERRORS.denied,
+  nomic: MIC_ERRORS.nomic,
+  busy: MIC_ERRORS.busy,
+  insecure: MIC_ERRORS.insecure,
+  unsupported: MIC_ERRORS.unsupported,
+  unknown: MIC_ERRORS.unknown,
+  service: { title: "Trình duyệt chưa cho nhận diện giọng nói", text: "Hãy kiểm tra quyền micro, hoặc dùng Chrome hay Edge bản mới. Bạn có thể chuyển sang luyện thủ công.", retry: true },
+  network: { title: "Mất kết nối tới dịch vụ nhận diện", text: "Nhận diện giọng nói cần Internet. Hãy kiểm tra mạng rồi thử lại, hoặc chuyển sang luyện thủ công.", retry: true }
+};
+
+function recordOf(t, i) {
+  const k = sKey(t.id, i);
+  if (!state.sp[k]) state.sp[k] = { status: "new", attempts: 0, successes: 0, firstResult: null, completedAt: null, seconds: 0, lastHeard: "", review: false };
+  return state.sp[k];
+}
+
+function renderPractice(topicId, rawIndex, mode) {
   const t = topicById(topicId);
   const index = parseInt(rawIndex, 10);
   if (!t || !t.sentences[index]) { view.innerHTML = notFound(); return; }
   state.last = { topicId: t.id, index };
-  save();
   P = {
-    t, index, s: t.sentences[index],
-    listen: "idle",       // idle | loading | playing
-    mic: "idle",          // idle | requesting | recording | recorded | measured | error
-    micErr: null, live: null, recUrl: null, seconds: 0, timer: 0,
-    meter: "quiet", goodUntil: 0, loudSeen: false, history: [],
-    heard: false, spoke: false, audio: null, playing: false, speechNote: null
+    t, index, s: t.sentences[index], mode: mode || "learn",
+    rec: recordOf(t, index),
+    phase: "ready", run: 0, timers: [], interim: "", feedback: null, note: null, nudge: false,
+    silentRounds: 0, sessionAttempts: 0, solved: false, errCode: null, history: [],
+    // các trường cho chế độ thủ công
+    mic: "idle", micErr: null, live: null, recUrl: null, seconds: 0, timer: 0,
+    meter: "quiet", goodUntil: 0, loudSeen: false, audio: null, playing: false
   };
+  if (P.rec.status === "new") P.rec.status = "doing";
+  lessonSeen.add(index);
+  save();
   const long = P.s.en.length > 22;
-  const done = repsOf(t.id, index) >= TARGET_REPS;
   view.innerHTML = `<div class="screen">
     <header class="pr-head">
-      <a class="icon-btn" href="#/topics" aria-label="Quay lại danh sách chủ đề">${ic("back")}</a>
+      <a class="icon-btn" href="#/topics" aria-label="Thoát, quay lại danh sách chủ đề">${ic("x")}</a>
       <div class="mid">
-        <p class="tn">${t.icon} ${esc(t.vi)}</p>
+        <p class="tn">${t.icon} ${esc(t.vi)}${P.mode !== "learn" ? " · Ôn tập" : ""}</p>
         <button class="pr-jump" data-act="pickSentence" aria-label="Chọn câu khác, đang ở câu ${index + 1} trên ${t.sentences.length}">Câu ${index + 1}/${t.sentences.length}${ic("down")}</button>
       </div>
       <button class="icon-btn" data-act="guide" aria-label="Xem hướng dẫn">${ic("help")}</button>
     </header>
     <div style="margin-bottom:6px">${bar(topicPercent(t), doneInTopic(t) === t.sentences.length ? "good" : "")}</div>
-    <div class="pr-grid">
+    <div class="pr-grid lesson-pad">
       <section class="pr-main">
         <div class="sentence">
           <h1 class="en ${long ? "long" : ""}" lang="en">${esc(P.s.en)}</h1>
+          ${P.s.ipa ? `<p class="ipa">${esc(P.s.ipa)}</p>` : ""}
           <p class="vi" id="viText" ${state.showVi ? "" : "hidden"}>${esc(P.s.vi)}</p>
           <button class="toggle-vi" data-act="toggleVi" id="viToggle"></button>
         </div>
       </section>
       <div class="stack" style="gap:10px">
-        <div class="hint" id="hint" aria-live="polite"></div>
-        <section class="panel" id="listenPanel" aria-label="Nghe mẫu">
-          <button class="btn btn-lg btn-block" id="listenBtn" data-act="listen"></button>
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+        <div class="live" id="live"></div>
+        <section class="panel" aria-label="Tốc độ đọc">
           <div class="seg" role="group" aria-label="Tốc độ đọc" id="speedSeg"></div>
-          <div id="listenNote" hidden></div>
         </section>
-        <section class="panel" id="speakPanel" aria-label="Luyện nói theo"></section>
+        <section class="panel" id="speakPanel" aria-label="Luyện nói theo" hidden></section>
       </div>
     </div>
   </div>
-  <div class="dock"><div class="dock-in">
-    <div class="count-row">
-      <span class="count" id="count" aria-live="polite"></span>
-      <div style="flex:1" id="countBar"></div>
-    </div>
-    <div class="dock-btns">
-      <button class="nav-side" data-act="prevSentence" ${index === 0 ? "disabled" : ""} aria-label="Câu trước">${ic("back")}Câu trước</button>
-      <button class="btn plus" id="plusBtn" data-act="plusOne"></button>
-      <button class="nav-side" id="nextBtn" data-act="nextSentence" aria-label="Câu tiếp theo">${ic("next")}Câu tiếp</button>
-    </div>
-  </div></div>`;
-  P.alreadyDone = done;
-  syncVi(); syncListen(); syncSpeed(); syncSpeak(); syncCounter(); syncStep();
+  <div class="dock lesson-dock"><div class="dock-in" id="lessonDock"></div></div>`;
+  syncVi(); syncSpeed();
+  if (!Recog.supported || manualPreferred) { renderManualMode(); }
+  else { syncLesson(); }
   if (!state.seenGuide) {
     state.seenGuide = true;
     save();
     openGuide();
+  } else if (autoRun && !P.forceManual && Recog.supported) {
+    later(playModel, 200);
   }
 }
 
-const practiceReps = () => repsOf(P.t.id, P.index);
 function syncVi() {
   const on = state.showVi;
   const vi = $("#viText"), btn = $("#viToggle");
@@ -1156,33 +1405,405 @@ function syncSpeed() {
   box.innerHTML = Object.entries(SPEEDS).map(([k, v]) =>
     `<button data-act="setSpeed" data-speed="${k}" aria-pressed="${state.speed === k}">${v.label}</button>`).join("");
 }
-function syncListen() {
-  const btn = $("#listenBtn");
-  if (!btn || !P) return;
-  const isNext = currentStep() === 1;
-  btn.className = `btn btn-lg btn-block ${isNext ? "btn-primary" : "btn-soft"}`;
-  if (!Speech.supported) {
-    btn.disabled = true;
-    btn.innerHTML = `${ic("warn")}Không phát được giọng đọc`;
-  } else if (P.listen === "loading") {
-    btn.innerHTML = `${ic("clock")}Đang chuẩn bị…`;
-  } else if (P.listen === "playing") {
-    btn.innerHTML = `${ic("stop")}Đang phát… Nhấn để dừng`;
-  } else {
-    btn.innerHTML = `${ic("play")}${P.heard ? "Nghe lại mẫu" : "Nghe mẫu"}`;
+
+/* Vẽ lại trạng thái, vùng nghe và các nút theo pha hiện tại */
+function syncLesson() {
+  if (!P) return;
+  const ph = PHASES[P.phase];
+  $("#status").className = `status ${ph.cls}`;
+  $("#status").innerHTML = `${ic(ph.icon)}<span>${esc(P.nudge && (P.phase === "turn" || P.phase === "listening") ? "Bạn hãy thử nói theo câu mẫu nhé" : ph.label)}</span>`;
+  syncLive();
+  syncDock();
+}
+function syncLive() {
+  const box = $("#live");
+  if (!box) return;
+  let html = "";
+  const micOn = P.phase === "turn" || P.phase === "listening";
+  if (micOn) {
+    html += P.meterOn
+      ? `<canvas class="wave" id="wave" role="img" aria-label="Sóng âm giọng nói của bạn"></canvas>`
+      : `<div class="fake-wave ${P.phase === "listening" ? "on" : ""}" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>`;
+    html += `<p class="interim" id="interim">${esc(P.interim)}</p>`;
   }
-  const note = $("#listenNote");
-  const msg = !Speech.supported ? SPEECH_UNSUPPORTED : P.speechNote;
-  note.hidden = !msg;
-  note.innerHTML = msg ? `<div class="notice notice-warn">${ic("warn")}<div>${esc(msg)}</div></div>` : "";
+  if (P.note) html += `<div class="notice notice-warn">${ic("warn")}<div>${esc(P.note)}</div></div>`;
+  if (P.feedback && P.feedback.level === "wrong") {
+    html += `<div class="card compare"><div><b>Mình nghe được</b><span lang="en">${esc(P.feedback.heard)}</span></div><div><b>Câu chuẩn</b><span lang="en">${esc(P.s.en)}</span></div></div>`;
+  } else if (P.feedback && P.feedback.level === "near") {
+    html += `<div class="card compare"><div><b>Mình nghe được</b><span lang="en">${esc(P.feedback.heard)}</span></div></div>`;
+  }
+  if (P.phase === "correct" || P.phase === "moving") {
+    html += `<div class="card compare"><div><b>Câu chuẩn</b><span lang="en">${esc(P.s.en)}</span></div><div><b>Nghĩa</b><span>${esc(P.s.vi)}</span></div></div>`;
+  }
+  if (P.phase === "error") {
+    const e = RECOG_ERRORS[P.errCode] || RECOG_ERRORS.unknown;
+    html += `<div class="notice notice-bad">${ic("micOff")}<div><b>${esc(e.title)}</b>${esc(e.text)}</div></div>`;
+  }
+  if (P.phase === "ready" && !micReady) {
+    html += `<p class="first-note">Lần đầu, trình duyệt sẽ hỏi quyền micro. Hãy chọn Cho phép để app tự nghe bạn nói.</p>`;
+  }
+  box.innerHTML = html;
+  const c = $("#wave");
+  if (c) { const dpr = window.devicePixelRatio || 1; c.width = c.clientWidth * dpr; c.height = c.clientHeight * dpr; }
+}
+function syncDock() {
+  const box = $("#lessonDock");
+  if (!box) return;
+  const tool = (act, icon, label, off) => `<button class="tool" data-act="${act}" ${off ? "disabled" : ""}>${ic(icon)}${label}</button>`;
+  if (P.phase === "ready") {
+    box.innerHTML = `<button class="btn btn-primary btn-lg btn-block" data-act="startLesson">${ic("play")}Nghe mẫu</button>`;
+  } else if (P.phase === "paused") {
+    box.innerHTML = `<div class="two"><button class="btn btn-ghost" data-act="skipSentence" style="min-height:56px">${ic("skip")}Bỏ qua</button>
+      <button class="btn btn-primary" data-act="startLesson" style="min-height:56px">${ic("play")}Tiếp tục</button></div>`;
+  } else if (P.phase === "error") {
+    const e = RECOG_ERRORS[P.errCode] || RECOG_ERRORS.unknown;
+    box.innerHTML = `<div class="two">
+      <button class="btn btn-ghost" data-act="useManual" style="min-height:56px">Luyện thủ công</button>
+      ${e.retry ? `<button class="btn btn-primary" data-act="retryLesson" style="min-height:56px">${ic("redo")}Thử lại</button>` : `<button class="btn btn-ghost" data-act="skipSentence" style="min-height:56px">${ic("skip")}Bỏ qua</button>`}
+    </div>`;
+  } else {
+    const locked = P.phase === "correct" || P.phase === "moving" || P.phase === "perm";
+    box.innerHTML = `<div class="tools">
+      ${tool("playModel", "play", "Nghe lại", locked)}
+      ${tool("goListen", "mic", "Nói lại", locked)}
+      ${tool("pauseLesson", "pause", "Tạm dừng", P.phase === "perm")}
+      ${tool("skipSentence", "skip", "Bỏ qua", locked)}
+    </div>`;
+  }
+}
+function setPhase(phase) {
+  if (!P) return;
+  P.phase = phase;
+  syncLesson();
+}
+/* Hẹn giờ gắn với lượt chạy hiện tại: bị hủy tự động khi lượt đó kết thúc */
+function later(fn, ms) {
+  const owner = P, run = P.run;
+  const id = setTimeout(() => { if (P === owner && P.run === run) fn(); }, ms);
+  P.timers.push(id);
+}
+/* Dừng mọi thứ đang chạy: giọng mẫu, nhận diện, micro và hẹn giờ */
+function interrupt() {
+  if (!P) return;
+  P.run++;
+  P.timers.forEach(clearTimeout);
+  P.timers = [];
+  Recog.stop();
+  if (P.mic !== "recording") Mic.stop(true);
+  P.meterOn = false;
+  Speech.cancel();
+}
+/* Xin quyền micro bằng thao tác chủ động của người dùng, sau đó nhả micro ngay */
+async function ensureMic() {
+  if (micReady) return true;
+  try {
+    if (navigator.permissions && navigator.permissions.query) {
+      const st = await navigator.permissions.query({ name: "microphone" });
+      if (st.state === "granted") { micReady = true; return true; }
+    }
+  } catch (e) { /* trình duyệt không hỗ trợ truy vấn quyền: đi tiếp bên dưới */ }
+  if (!Mic.canUseMic()) {
+    // Safari cũ có nhận diện nhưng không có getUserMedia: để bộ nhận diện tự xin quyền
+    if (window.isSecureContext === false) throw "insecure";
+    micReady = true;
+    return true;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    stream.getTracks().forEach((tr) => tr.stop());
+    micReady = true;
+    return true;
+  } catch (e) {
+    const map = { NotAllowedError: "denied", PermissionDeniedError: "denied", SecurityError: "denied", NotFoundError: "nomic", DevicesNotFoundError: "nomic", NotReadableError: "busy", TrackStartError: "busy" };
+    throw map[e && e.name] || "unknown";
+  }
+}
+function showError(code) {
+  if (!P) return;
+  interrupt();
+  P.feedback = null;
+  P.errCode = code;
+  setPhase("error");
+}
+/* Thao tác duy nhất người học cần làm: nhấn Nghe mẫu hoặc Tiếp tục */
+async function startLesson() {
+  if (!P) return;
+  if (P.solved) { advance(); return; }
+  autoRun = true;
+  interrupt();
+  const owner = P, run = P.run;
+  if (!micReady) setPhase("perm");
+  try { await ensureMic(); }
+  catch (code) { if (P === owner && P.run === run) showError(code); return; }
+  if (P === owner && P.run === run) playModel();
+}
+function playModel() {
+  if (!P) return;
+  interrupt();
+  P.note = null;
+  setPhase("model");
+  const owner = P, run = P.run;
+  Speech.speak(P.s.en, SPEEDS[state.speed].rate).then((r) => {
+    if (P !== owner || P.run !== run) return;
+    if (r === "canceled") return;
+    if (r === "error") P.note = SPEECH_FAILED;
+    if (r === "unsupported") P.note = SPEECH_UNSUPPORTED;
+    // Chờ một nhịp để micro không thu phải đuôi giọng mẫu
+    later(goListen, 250);
+  });
+}
+function goListen() {
+  if (!P) return;
+  interrupt();
+  markActive();
+  P.interim = "";
+  P.nudge = false;
+  P.history = new Array(36).fill(0);
+  P.meterOn = meterAllowed && Mic.canUseMic() && Mic.canMeasure();
+  setPhase("turn");
+  later(() => { P.nudge = true; syncLesson(); }, SILENCE_NUDGE_MS);
+  if (P.meterOn) startWave();
+  const owner = P, run = P.run;
+  const stale = () => P !== owner || P.run !== run;
+  Recog.start({
+    onSpeech() {
+      if (stale()) return;
+      markActive();
+      P.nudge = false;
+      if (P.phase === "turn") setPhase("listening");
+      else syncLesson();
+    },
+    onInterim(text) {
+      if (stale()) return;
+      P.interim = text;
+      P.nudge = false;
+      if (P.feedback) { P.feedback = null; syncLive(); }
+      if (P.phase !== "listening") setPhase("listening");
+      const el = $("#interim");
+      if (el) el.textContent = text;
+    },
+    onFinal(alts) { if (!stale()) judge(alts); },
+    onError(code) {
+      if (stale()) return;
+      if (code === "no-speech") { P.endReason = "silent"; return; }
+      if (code === "audio-capture" && P.meterOn) {
+        // Micro không phục vụ được cả hai nơi: bỏ đo âm lượng, giữ nhận diện
+        meterAllowed = false;
+        later(goListen, 300);
+        P.endReason = "retry";
+        return;
+      }
+      const map = { "not-allowed": "denied", "service-not-allowed": "service", "audio-capture": "nomic", network: "network", "language-not-supported": "service", "start-failed": "unknown" };
+      if (code === "not-allowed") micReady = false;
+      showError(map[code] || "unknown");
+    },
+    onEnd() {
+      if (stale()) return;
+      const reason = P.endReason;
+      P.endReason = null;
+      if (reason === "retry") return;
+      if (P.interim) {
+        // Chỉ có kết quả tạm mà không có kết quả cuối: không chấm, nhờ nói lại
+        P.note = "Mình chưa nghe rõ, hãy thử lại";
+        later(goListen, 900);
+        syncLive();
+        return;
+      }
+      P.silentRounds++;
+      if (P.silentRounds >= MAX_SILENT_ROUNDS) {
+        // Im lặng lâu: nhả micro thay vì nghe mãi, và không tính là sai
+        interrupt();
+        setPhase("held");
+        return;
+      }
+      goListen();
+    }
+  });
+}
+function startWave() {
+  const owner = P;
+  Mic.start({
+    meterOnly: true,
+    onLive() {},
+    onLevel(level) { if (P === owner) drawWave(level); },
+    onDone() {},
+    onError() {}
+  });
+}
+function drawWave(level) {
+  const c = $("#wave");
+  if (!c || !c.width) return;
+  const g = c.getContext("2d");
+  const w = c.width, h = c.height, bars = 36, hist = P.history;
+  hist.push(level);
+  if (hist.length > bars) hist.shift();
+  g.clearRect(0, 0, w, h);
+  g.fillStyle = "#C2412D";
+  const bw = w / bars;
+  hist.forEach((lv, i) => {
+    const bh = Math.max(3, lv * h);
+    g.fillRect((bars - hist.length + i) * bw + bw * .18, (h - bh) / 2, bw * .64, bh);
+  });
+}
+/* Chấm kết quả cuối, chọn phương án nhận diện có lợi nhất cho người học */
+function judge(alts) {
+  if (P.solved) return;
+  const rank = { wrong: 0, near: 1, correct: 2 };
+  let best = null;
+  alts.forEach((text) => {
+    const g = gradeSpeech(text, P.s);
+    if (!best || rank[g.level] > rank[best.level] || (rank[g.level] === rank[best.level] && g.score > best.score)) best = { ...g, heard: text.trim() };
+  });
+  interrupt();
+  if (!best || !best.heard) { P.note = "Mình chưa nghe rõ, hãy thử lại"; later(goListen, 900); syncLive(); return; }
+  markActive();
+  P.silentRounds = 0;
+  P.note = null;
+  P.interim = "";
+  const rec = P.rec;
+  rec.attempts++;
+  P.sessionAttempts++;
+  rec.lastHeard = best.heard;
+  if (!rec.firstResult) rec.firstResult = best.level;
+  todayRecord().reps++;
+  state.totalReps++;
+  practiceSessionReps++;
+  recordActivity();
+  if (best.level === "correct") {
+    P.solved = true;
+    rec.successes++;
+    if (!rec.completedAt) rec.completedAt = Date.now();
+    rec.status = "done";
+    rec.review = P.sessionAttempts > 1;
+    save();
+    P.feedback = null;
+    confetti();
+    vibrate(20);
+    setPhase("correct");
+    later(() => { setPhase("moving"); later(advance, 350); }, 1000);
+    return;
+  }
+  rec.review = true;
+  save();
+  P.feedback = best;
+  setPhase(best.level);
+  later(goListen, best.level === "near" ? 1600 : 2400);
+}
+/* Câu tiếp theo tùy lượt học; không còn câu thì sang màn hình chúc mừng */
+function nextIndex() {
+  const t = P.t, n = t.sentences.length;
+  if (P.mode === "review") return reviewList(t).find((i) => !lessonSeen.has(i));
+  if (P.mode === "all") return P.index + 1 < n ? P.index + 1 : undefined;
+  for (let k = 1; k <= n; k++) {
+    const i = (P.index + k) % n;
+    if (isOpen(t.id, i)) return i;
+  }
+  return undefined;
+}
+function advance() {
+  if (!P) return;
+  const i = nextIndex();
+  if (i === undefined) { autoRun = false; location.hash = `#/finish/${P.t.id}`; return; }
+  gotoSentence(i);
+}
+function gotoSentence(i) {
+  const suffix = P.mode !== "learn" ? `/${P.mode}` : "";
+  location.replace(`#/practice/${P.t.id}/${i}${suffix}`);
+}
+function pauseLesson() {
+  if (!P) return;
+  interrupt();
+  P.nudge = false;
+  setPhase("paused");
+}
+function pauseIfActive() {
+  if (P && ACTIVE_PHASES.includes(P.phase)) pauseLesson();
+}
+/* Bỏ qua: chuyển câu và đưa câu này vào danh sách ôn tập */
+function skipSentence() {
+  if (!P) return;
+  interrupt();
+  P.rec.review = true;
+  if (!P.rec.completedAt) P.rec.status = "review";
+  save();
+  advance();
+}
+function openPicker() {
+  const t = P.t;
+  const suffix = P.mode !== "learn" ? P.mode : "";
+  openSheet(`
+    <div class="row between"><h2 class="subtitle">Chọn câu</h2><button class="icon-btn" data-act="closeSheet" aria-label="Đóng">${ic("x")}</button></div>
+    <div>${t.sentences.map((s, i) => {
+      const done = isDone(t.id, i), review = needsReview(t.id, i);
+      const label = review ? "Cần ôn" : done ? "Đã xong" : spOf(t.id, i) && spOf(t.id, i).status === "doing" ? "Đang học" : "Chưa học";
+      return `<button class="sheet-item" data-act="jumpSentence" data-i="${i}" aria-current="${i === P.index}">
+        <span class="no ${done ? "ok" : ""}">${done ? ic("check") : i + 1}</span>
+        <span class="txt" lang="en">${esc(s.en)}</span>
+        <span class="small muted">${label}</span>
+      </button>`;
+    }).join("")}</div>`);
+}
+function openGuide() {
+  const steps = [
+    ["1", "Nhấn <b>Nghe mẫu</b> một lần. Lần đầu hãy cho phép dùng micro."],
+    ["2", "Nghe xong, app <b>tự bật micro</b>. Bạn cứ nói theo thật to."],
+    ["3", "Nói đúng, app <b>tự chuyển sang câu tiếp</b>. Bạn không cần bấm gì."],
+    ["💬", "Nói chưa đúng cũng không sao. Bạn được thử lại không giới hạn và không bị trừ điểm."]
+  ];
+  openSheet(`
+    <h2 class="subtitle">Cách luyện nói</h2>
+    <div class="stack">${steps.map(([n, txt]) => `<div class="guide-step"><span class="no">${n}</span><p>${txt}</p></div>`).join("")}</div>
+    <p class="small muted">App chấm theo chữ mà máy nghe được, không phải điểm phát âm chính xác tuyệt đối. Cần có Internet để nhận diện giọng nói.</p>
+    <button class="btn btn-primary btn-lg btn-block" data-act="closeSheet">Mình hiểu rồi</button>`);
+}
+function openBadge(t) {
+  openSheet(`
+    <div style="text-align:center"><div style="font-size:3.5rem;line-height:1.2">🏅</div>
+      <h2 class="title">Huy hiệu mới!</h2>
+      <p class="muted">Bạn đã hoàn thành chủ đề ${t.icon} ${esc(t.vi)}. Quá giỏi!</p></div>
+    <button class="btn btn-primary btn-lg btn-block" data-act="closeSheet">Tuyệt vời</button>`);
 }
 
-/* Vẽ lại khu vực micro theo đúng trạng thái hiện tại */
+/* --- Chế độ thủ công: khi trình duyệt không nhận diện được giọng nói --- */
+function renderManualMode() {
+  if (!P) return;
+  interrupt();
+  P.manual = true;
+  P.phase = "ready";
+  const status = $("#status");
+  status.className = "status st-idle";
+  status.innerHTML = `${ic("mic")}<span>Chế độ luyện thủ công</span>`;
+  $("#live").innerHTML = `<div class="notice notice-warn">${ic("warn")}<div>${Recog.supported ? "Bạn đang luyện thủ công." : "Trình duyệt này chưa tự nhận diện được giọng nói. Hãy dùng Chrome hoặc Edge để luyện tự động."} Nghe mẫu, nói theo rồi nhấn nút bên dưới.</div></div>`;
+  $("#speakPanel").hidden = false;
+  $("#lessonDock").innerHTML = `<div class="two">
+    <button class="btn btn-soft" id="manualListen" style="min-height:56px"><span data-icon>${ic("play")}</span><span data-label>Nghe mẫu</span></button>
+    <button class="btn btn-primary" data-act="manualDone" style="min-height:56px">${ic("check")}Mình đã nói xong</button>
+  </div>`;
+  $("#manualListen").onclick = (e) => sayFromButton(e.currentTarget, P.s.en, SPEEDS[state.speed].rate);
+  syncSpeak();
+}
+function manualDone() {
+  if (!P || P.solved) return;
+  if (P.mic === "recording") stopMic();
+  P.solved = true;
+  const rec = P.rec;
+  rec.attempts++;
+  rec.successes++;
+  if (!rec.firstResult) rec.firstResult = "manual";
+  if (!rec.completedAt) rec.completedAt = Date.now();
+  rec.status = "done";
+  rec.review = false;
+  todayRecord().reps++;
+  state.totalReps++;
+  practiceSessionReps++;
+  recordActivity();
+  save();
+  toast("Tốt lắm! Sang câu tiếp nhé.");
+  advance();
+}
 function syncSpeak() {
   const box = $("#speakPanel");
   if (!box || !P) return;
-  const isNext = currentStep() === 2;
-  const startCls = isNext ? "btn-primary" : "btn-soft";
   let html = "";
   switch (P.mic) {
     case "requesting":
@@ -1190,7 +1811,7 @@ function syncSpeak() {
       break;
     case "recording":
       html = `
-        <div class="rec-line"><span>${P.live.recording ? `<i class="rec-dot"></i>Đang ghi âm` : `<i class="rec-dot"></i>Đang đo âm lượng`}</span><span id="recTime">${mmss(P.seconds)}</span></div>
+        <div class="rec-line"><span><i class="rec-dot"></i>${P.live.recording ? "Đang ghi âm" : "Đang đo âm lượng"}</span><span id="recTime">${mmss(P.seconds)}</span></div>
         ${P.live.measuring
           ? `<canvas class="meter" id="meter" role="img" aria-label="Thanh đo âm lượng giọng nói, có vạch mục tiêu"></canvas>
              <div class="meter-status" id="meterStatus" data-s="quiet" aria-live="polite">${ic("mic")}Mình đang nghe, hãy nói đi!</div>`
@@ -1199,8 +1820,7 @@ function syncSpeak() {
       break;
     case "recorded":
       html = `
-        <div class="notice ${P.loudSeen || !P.live.measuring ? "notice-good" : "notice-warn"}">${ic(P.loudSeen || !P.live.measuring ? "check" : "mic")}
-          <div>${!P.live.measuring ? "Đã ghi âm. Hãy nghe lại giọng của bạn." : P.loudSeen ? "Đã ghi âm. Bạn nói đủ to rồi!" : "Đã ghi âm. Lần sau thử nói to hơn nhé!"}</div></div>
+        <div class="notice notice-good">${ic("check")}<div>Đã ghi âm. Hãy nghe lại giọng của bạn.</div></div>
         <div class="two">
           <button class="btn btn-soft" data-act="playback">${ic(P.playing ? "stop" : "play")}${P.playing ? "Đang phát…" : "Nghe lại"}</button>
           <button class="btn btn-ghost" data-act="startMic">${ic("redo")}Nói lại</button>
@@ -1208,8 +1828,8 @@ function syncSpeak() {
       break;
     case "measured":
       html = `
-        <div class="notice notice-warn">${ic("warn")}<div>Chưa có bản ghi để nghe lại${Mic.canRecord() ? "" : " vì trình duyệt không hỗ trợ ghi âm"}. Bạn vẫn có thể luyện nói và nhấn +1.</div></div>
-        <button class="btn ${startCls} btn-mic btn-block" data-act="startMic">${ic("mic")}Nói theo</button>`;
+        <div class="notice notice-warn">${ic("warn")}<div>Chưa có bản ghi để nghe lại${Mic.canRecord() ? "" : " vì trình duyệt không hỗ trợ ghi âm"}. Bạn vẫn có thể luyện nói.</div></div>
+        <button class="btn btn-soft btn-mic btn-block" data-act="startMic">${ic("mic")}Nói theo</button>`;
       break;
     case "error": {
       const err = MIC_ERRORS[P.micErr] || MIC_ERRORS.unknown;
@@ -1219,62 +1839,18 @@ function syncSpeak() {
       break;
     }
     default:
-      html = `<button class="btn ${startCls} btn-mic btn-block" data-act="startMic">${ic("mic")}Nói theo</button>
+      html = `<button class="btn btn-soft btn-mic btn-block" data-act="startMic">${ic("mic")}Nói theo</button>
         <p class="small muted" style="text-align:center">Đo độ to giọng nói và ghi âm để bạn tự nghe lại, không chấm phát âm.</p>`;
   }
   box.innerHTML = html;
   const grid = box.closest(".pr-grid");
   if (grid) grid.classList.toggle("is-rec", P.mic === "recording");
-  if (P.mic === "recording" && P.live.measuring) setupCanvas();
+  if (P.mic === "recording" && P.live.measuring) {
+    const c = $("#meter");
+    if (c) { const dpr = window.devicePixelRatio || 1; c.width = c.clientWidth * dpr; c.height = c.clientHeight * dpr; }
+  }
   if (P.mic === "recording" || P.mic === "error" || P.mic === "recorded") box.scrollIntoView({ block: "nearest" });
 }
-function setupCanvas() {
-  const c = $("#meter");
-  if (!c) return;
-  const dpr = window.devicePixelRatio || 1;
-  c.width = c.clientWidth * dpr;
-  c.height = c.clientHeight * dpr;
-}
-function syncCounter() {
-  const count = practiceReps();
-  $("#count").innerHTML = `${count}<small>/${TARGET_REPS} lần</small>`;
-  const pct = Math.min(100, Math.round(count / TARGET_REPS * 100));
-  $("#countBar").innerHTML = bar(pct, count >= TARGET_REPS ? "good" : "");
-}
-/* Bước kế tiếp người học nên làm: chỉ một nút được tô nổi bật tại mỗi thời điểm */
-function currentStep() {
-  if (!P) return 0;
-  if (practiceReps() >= TARGET_REPS) return 4;
-  if (!P.heard && Speech.supported) return 1;
-  // Micro không dùng được vẫn học được: nói thành tiếng rồi tự xác nhận +1
-  if (!P.spoke && P.mic !== "error") return 2;
-  return 3;
-}
-function syncStep() {
-  if (!P) return;
-  const step = currentStep();
-  const count = practiceReps();
-  const hint = $("#hint");
-  const plus = $("#plusBtn");
-  const next = $("#nextBtn");
-  const t = P.t;
-  const left = t.sentences.length - doneInTopic(t);
-  plus.className = `btn plus ${step === 3 ? "btn-primary" : step === 4 ? "plus-soft" : "plus-idle"}`;
-  plus.innerHTML = step === 4 ? `<b>+1</b> Luyện thêm` : `<b>+1</b> Xong 1 lần`;
-  next.classList.toggle("is-next", step === 4);
-  hint.classList.toggle("done", step === 4);
-  let text;
-  if (step === 1) text = "Bước 1: Nhấn Nghe mẫu để nghe cách phát âm.";
-  else if (step === 2) text = count === 0 ? "Bước 2: Bật micro và nói theo thật to." : `Tiếp tục nào! Nói thật to lần thứ ${count + 1}.`;
-  else if (step === 3) text = P.mic === "error" ? "Hãy nói to theo mẫu, rồi nhấn +1 sau mỗi lần." : "Bước 3: Nhấn +1 sau mỗi lần luyện nói.";
-  else if (left === 0) text = `Tuyệt vời! Bạn đã hoàn thành cả chủ đề.`;
-  else if (P.alreadyDone) text = `Câu này đã hoàn thành. Luyện thêm hoặc sang câu tiếp nhé.`;
-  else text = `Tuyệt vời! Bạn đã luyện câu này ${TARGET_REPS} lần.${left <= 3 ? ` Chỉ còn ${left} câu nữa để hoàn thành chủ đề.` : ""}`;
-  hint.innerHTML = `${ic(step === 4 ? "check" : "next")}<span>${esc(text)}</span>`;
-  syncListen();
-  if (P.mic === "idle" || P.mic === "measured") syncSpeak();
-}
-
 function drawMeter(level) {
   const c = $("#meter");
   if (!c || !c.width) return;
@@ -1293,7 +1869,6 @@ function drawMeter(level) {
     const x = (bars - hist.length + i) * bw;
     g.fillRect(x + bw * .18, h - bh, bw * .64, bh);
   });
-  // Vạch mục tiêu
   g.globalAlpha = 1;
   const y = h - LOUD_TARGET * h;
   g.strokeStyle = "#1F2A37";
@@ -1307,7 +1882,6 @@ function onLevel(level) {
   drawMeter(level);
   const now = performance.now();
   if (level >= LOUD_TARGET) { P.goodUntil = now + 700; P.loudSeen = true; }
-  // Giữ trạng thái "đủ to" thêm một nhịp để chữ không nhấp nháy
   const next = now < P.goodUntil ? "good" : level >= QUIET_LEVEL ? "low" : "quiet";
   if (next !== P.meter) {
     P.meter = next;
@@ -1335,7 +1909,7 @@ function startMic() {
       if (!live.measuring && !live.recording) {
         Mic.stop(true);
         P.mic = "error"; P.micErr = "unsupported";
-        syncSpeak(); syncStep();
+        syncSpeak();
         return;
       }
       P.live = live;
@@ -1363,16 +1937,13 @@ function startMic() {
       P.mic = "error";
       P.micErr = code;
       syncSpeak();
-      syncStep();
     }
   });
 }
 function stopMic() {
   if (!P || P.mic !== "recording") return;
   clearInterval(P.timer);
-  P.spoke = true;
   Mic.stop(false);
-  syncStep();
 }
 function stopPlayback() {
   if (P && P.audio) {
@@ -1401,103 +1972,55 @@ function togglePlayback() {
   const p = audio.play();
   if (p && p.catch) p.catch(() => { finish(); });
 }
-function listenModel() {
-  if (!P || !Speech.supported) return;
-  if (P.listen !== "idle") { Speech.cancel(); return; }
-  if (P.mic === "recording") stopMic();
-  stopPlayback();
-  P.speechNote = null;
-  const owner = P;
-  Speech.speak(P.s.en, SPEEDS[state.speed].rate, (s) => {
-    if (P !== owner) return;
-    P.listen = s;
-    syncListen();
-  }).then((r) => {
-    if (P !== owner) return;
-    if (r === "error") {
-      P.speechNote = SPEECH_FAILED;
-      syncListen();
-    } else if (r === "ended") {
-      P.heard = true;
-      syncStep();
-    }
-  });
-}
-function plusOne() {
-  if (!P) return;
-  if (P.mic === "recording") stopMic();
-  const { count, justDone } = addRep(P.t, P.index);
-  practiceSessionReps++;
-  P.heard = true;
-  P.spoke = false;
-  syncCounter();
-  const el = $("#count");
-  el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop");
-  vibrate(15);
-  if (justDone) {
-    P.alreadyDone = false;
-    confetti();
-    vibrate([30, 40, 30]);
-    if (awardBadgeIfNew(P.t)) openBadge(P.t);
-  } else if (count === 5) toast("Tốt lắm! Đã được 5 lần rồi.");
-  else if (count === 10) toast("Đã được nửa chặng, cố lên!");
-  else if (count === 15) toast("Sắp xong rồi, chỉ còn 5 lần nữa!");
-  syncStep();
-  if (P.mic === "idle") syncSpeak();
-}
-function gotoSentence(i) { location.replace(`#/practice/${P.t.id}/${i}`); }
-function nextSentence() {
-  const t = P.t;
-  if (P.index + 1 < t.sentences.length) { gotoSentence(P.index + 1); return; }
-  // Ở câu cuối: quay về câu còn dở, nếu không còn thì về danh sách chủ đề
-  const left = t.sentences.findIndex((_, i) => repsOf(t.id, i) < TARGET_REPS);
-  if (left >= 0 && left !== P.index) gotoSentence(left);
-  else location.hash = "#/topics";
-}
-function openPicker() {
-  const t = P.t;
-  openSheet(`
-    <div class="row between"><h2 class="subtitle">Chọn câu</h2><button class="icon-btn" data-act="closeSheet" aria-label="Đóng">${ic("x")}</button></div>
-    <div>${t.sentences.map((s, i) => {
-      const r = repsOf(t.id, i);
-      const ok = r >= TARGET_REPS;
-      return `<button class="sheet-item" data-act="jumpSentence" data-i="${i}" aria-current="${i === P.index}">
-        <span class="no ${ok ? "ok" : ""}">${ok ? ic("check") : i + 1}</span>
-        <span class="txt" lang="en">${esc(s.en)}</span>
-        <span class="small muted">${r}/${TARGET_REPS}</span>
-      </button>`;
-    }).join("")}</div>`);
-}
-function openGuide() {
-  const steps = [
-    ["1", "Nhấn <b>Nghe mẫu</b> để nghe cách phát âm."],
-    ["2", "Bật micro và <b>nói theo thật to</b>. Bạn có thể nghe lại giọng của mình."],
-    ["3", "Nhấn <b>+1</b> sau mỗi lần luyện nói."],
-    ["🎯", "Mục tiêu: lặp lại mỗi câu <b>20 lần</b>. Không cần xong một lúc, ứng dụng tự lưu cho bạn."]
-  ];
-  openSheet(`
-    <h2 class="subtitle">Cách luyện nói</h2>
-    <div class="stack">${steps.map(([n, txt]) => `<div class="guide-step"><span class="no">${n}</span><p>${txt}</p></div>`).join("")}</div>
-    <p class="small muted">Mẹo: nói thành tiếng, đừng đọc thầm. Tăng tốc độ khi đã quen miệng.</p>
-    <button class="btn btn-primary btn-lg btn-block" data-act="closeSheet">Mình hiểu rồi</button>`);
-}
-function openBadge(t) {
-  openSheet(`
-    <div style="text-align:center"><div style="font-size:3.5rem;line-height:1.2">🏅</div>
-      <h2 class="title">Huy hiệu mới!</h2>
-      <p class="muted">Bạn đã hoàn thành chủ đề ${t.icon} ${esc(t.vi)}. Quá giỏi!</p></div>
-    <a class="btn btn-primary btn-lg btn-block" href="#/vocab/${t.id}" data-act="closeSheet">Học từ vựng của chủ đề này</a>
-    <a class="btn btn-ghost btn-block" href="#/topics" data-act="closeSheet">Chọn chủ đề khác</a>`);
-}
 /* Giải phóng toàn bộ tài nguyên khi rời màn hình hoặc đổi câu */
 function cleanupPractice() {
   if (!P) return;
+  P.run++;
+  P.timers.forEach(clearTimeout);
   clearInterval(P.timer);
+  Recog.stop();
   Mic.stop(true);
   Speech.cancel();
   stopPlayback();
   clearRecording();
   P = null;
+}
+
+/* --- Màn hình chúc mừng khi xong chủ đề --- */
+function renderFinish(topicId) {
+  const t = topicById(topicId);
+  if (!t) { view.innerHTML = notFound(); return; }
+  const recs = t.sentences.map((_, i) => spOf(t.id, i)).filter(Boolean);
+  const done = doneInTopic(t);
+  const attempts = recs.reduce((n, r) => n + (r.attempts || 0), 0);
+  const graded = recs.filter((r) => r.firstResult && r.firstResult !== "legacy" && r.firstResult !== "manual");
+  const firstRate = graded.length ? Math.round(graded.filter((r) => r.firstResult === "correct").length / graded.length * 100) : null;
+  const seconds = recs.reduce((n, r) => n + (r.seconds || 0), 0);
+  const review = reviewList(t);
+  const nextTopic = TOPICS.find((x) => x.id !== t.id && x.sentences.some((_, i) => isOpen(x.id, i)));
+  const open = t.sentences.findIndex((_, i) => isOpen(t.id, i));
+  const complete = done === t.sentences.length;
+  view.innerHTML = `<div class="screen stack fc-wrap" style="padding-top:8px">
+    <div class="empty" style="padding:18px 8px 4px">
+      <div class="big">${complete ? "🎉" : t.icon}</div>
+      <h1 class="title">${complete ? "Chúc mừng bạn!" : "Tổng kết chủ đề"}</h1>
+      <p class="muted">${t.icon} ${esc(t.vi)}</p>
+    </div>
+    <div class="tiles" style="grid-template-columns:1fr 1fr">
+      <div class="tile"><b>${done}/${t.sentences.length}</b><span>câu hoàn thành</span></div>
+      <div class="tile"><b>${attempts}</b><span>lần thử</span></div>
+      <div class="tile"><b>${firstRate === null ? "–" : firstRate + "%"}</b><span>đúng ngay lần đầu</span></div>
+      <div class="tile"><b>${mmss(seconds)}</b><span>thời gian học</span></div>
+    </div>
+    ${open >= 0 ? `<a class="btn btn-primary btn-lg btn-block" href="#/practice/${t.id}/${open}">${ic("play")}Học tiếp câu còn lại</a>` : ""}
+    ${review.length
+      ? `<a class="btn ${open >= 0 ? "btn-soft" : "btn-primary btn-lg"} btn-block" href="#/practice/${t.id}/${review[0]}/review">${ic("redo")}Ôn tập câu chưa nhớ (${review.length})</a>`
+      : `<div class="notice notice-good">${ic("check")}<div>Không có câu nào cần ôn. Giỏi lắm!</div></div>`}
+    <a class="btn btn-ghost btn-block" href="#/practice/${t.id}/0/all">Ôn toàn bộ chủ đề</a>
+    ${nextTopic ? `<a class="btn ${review.length || open >= 0 ? "btn-ghost" : "btn-primary btn-lg"} btn-block" href="${topicHref(nextTopic)}">${ic("next")}Học chủ đề tiếp theo</a>` : ""}
+    <a class="btn btn-ghost btn-block" href="#/home">Về trang chủ</a>
+  </div>`;
+  if (awardBadgeIfNew(t)) { confetti(); openBadge(t); }
 }
 
 /* --- 5.4 Từ vựng --- */
@@ -1892,7 +2415,7 @@ function renderProgress() {
       <section class="wide">
         <div class="tiles" style="grid-template-columns:repeat(auto-fit,minmax(100px,1fr))">
           <div class="tile"><b>🔥 ${currentStreak()}</b><span>ngày liên tiếp</span></div>
-          <div class="tile"><b>${state.totalReps}</b><span>lần luyện nói</span></div>
+          <div class="tile"><b>${state.totalReps}</b><span>lần nói</span></div>
           <div class="tile"><b>${doneTotal()}/${totalSentences()}</b><span>câu hoàn thành</span></div>
           <div class="tile"><b>${knownTotal()}/${totalWords()}</b><span>từ đã nhớ</span></div>
           <div class="tile"><b>${minutesOf(today.seconds)}</b><span>phút hôm nay</span></div>
@@ -1912,7 +2435,7 @@ function renderProgress() {
       <section class="card stack">
         <p class="subtitle">Theo từng chủ đề</p>
         ${TOPICS.map((t) => `
-          <a href="#/practice/${t.id}/${Math.max(0, t.sentences.findIndex((_, i) => repsOf(t.id, i) < TARGET_REPS))}" style="display:block">
+          <a href="${topicHref(t)}" style="display:block">
             <div class="row between" style="margin-bottom:5px"><b class="small">${t.icon} ${esc(t.vi)}</b><span class="small muted" style="white-space:nowrap">${doneInTopic(t)}/${t.sentences.length} câu · ${knownInTopic(t)}/${t.words.length} từ</span></div>
             ${bar(topicPercent(t), topicStatus(t) === "done" ? "good" : "")}
           </a>`).join("")}
@@ -1955,22 +2478,23 @@ const Actions = {
   closeSheet() { closeSheet(); },
 
   /* Luyện câu */
-  listen: listenModel,
+  startLesson, playModel, goListen,
+  retryLesson() { micReady = false; startLesson(); },
+  pauseLesson, skipSentence,
   setSpeed(el) {
     state.speed = el.dataset.speed;
     save();
     syncSpeed();
-    if (P && P.listen !== "idle") { Speech.cancel(); listenModel(); }
+    if (P && P.phase === "model") playModel();
   },
   toggleVi() { state.showVi = !state.showVi; save(); syncVi(); },
+  useManual() { if (P) { Recog.stop(); P.forceManual = manualPreferred = true; renderManualMode(); } },
+  manualDone,
   startMic, stopMic,
   playback: togglePlayback,
-  plusOne,
-  prevSentence() { if (P && P.index > 0) gotoSentence(P.index - 1); },
-  nextSentence() { if (P) nextSentence(); },
-  pickSentence() { if (P) openPicker(); },
+  pickSentence() { if (P) { pauseIfActive(); openPicker(); } },
   jumpSentence(el) { closeSheet(); gotoSentence(parseInt(el.dataset.i, 10)); },
-  guide: openGuide,
+  guide() { pauseIfActive(); openGuide(); },
 
   /* Từ vựng */
   flip: flipCard,
@@ -2040,7 +2564,7 @@ function renderNav(active) {
 }
 let currentRoute = { name: "", learning: false };
 function route() {
-  const [name = "home", a, b] = location.hash.replace(/^#\/?/, "").split("/").map((x) => decodeURIComponent(x));
+  const [name = "home", a, b, c] = location.hash.replace(/^#\/?/, "").split("/").map((x) => decodeURIComponent(x));
   const leavingPractice = currentRoute.name === "practice" && name !== "practice";
   closeSheet();
   cleanupPractice();
@@ -2050,7 +2574,7 @@ function route() {
   if (leavingPractice && practiceSessionReps >= 3) {
     toast(`Buổi luyện tốt lắm! Bạn vừa nói thêm ${practiceSessionReps} lần.`);
   }
-  if (leavingPractice) practiceSessionReps = 0;
+  if (leavingPractice) { practiceSessionReps = 0; autoRun = false; lessonSeen = new Set(); }
 
   const vocabSession = name === "vocab" && a;
   const focus = name === "practice" || vocabSession || name === "challenge";
@@ -2062,7 +2586,8 @@ function route() {
   switch (name) {
     case "": case "home": renderNav("home"); renderHome(); break;
     case "topics": renderTopics(); break;
-    case "practice": renderPractice(a, b); break;
+    case "practice": renderPractice(a, b, c); break;
+    case "finish": renderFinish(a); break;
     case "vocab": a ? renderVocabSession(a) : renderVocabHome(); break;
     case "progress": renderProgress(); break;
     case "challenge": renderChallenge(); break;
@@ -2086,6 +2611,7 @@ setInterval(() => {
   const goalSec = state.goalMin * 60;
   const before = day.seconds;
   day.seconds++;
+  if (P && P.rec) P.rec.seconds = (P.rec.seconds || 0) + 1;
   if (before < goalSec && day.seconds >= goalSec) {
     toast(`🎯 Bạn đã đạt mục tiêu ${state.goalMin} phút hôm nay. Giỏi lắm!`);
     save();
@@ -2101,9 +2627,10 @@ document.addEventListener("visibilitychange", () => {
     if (P.mic === "recording") stopMic();
     Speech.cancel();
     stopPlayback();
+    pauseIfActive();
   }
 });
-window.addEventListener("pagehide", () => { save(); Mic.stop(true); Speech.cancel(); });
+window.addEventListener("pagehide", () => { save(); Recog.stop(); Mic.stop(true); Speech.cancel(); });
 
 /* ============================================================
    PHẦN 9: KHỞI ĐỘNG ỨNG DỤNG
