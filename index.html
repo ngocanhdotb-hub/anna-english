@@ -1,0 +1,2116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFF8F1">
+<meta name="description" content="Anna English – Luyện nói tiếng Anh giao tiếp mỗi ngày cho người Việt mới bắt đầu.">
+<title>Anna English – Luyện nói tiếng Anh mỗi ngày</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23C2412D'/%3E%3Ctext x='16' y='23' font-family='Arial' font-weight='700' font-size='20' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<!-- Font Be Vietnam Pro; nếu không tải được sẽ tự dùng font hệ thống trong --font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   PHẦN GIAO DIỆN (CSS) – thiết kế theo Mobile-first
+   ============================================================ */
+:root {
+  --font: "Be Vietnam Pro", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --bg: #FFF8F1;
+  --surface: #FFFFFF;
+  --ink: #1F2A37;
+  --muted: #566070;
+  --line: #EFE3D6;
+  --primary: #C2412D;
+  --primary-dark: #A33422;
+  --primary-soft: #FDEBE4;
+  --good: #0B6B63;
+  --good-soft: #DCF3EE;
+  --warn: #8A5300;
+  --warn-soft: #FFF1D6;
+  --danger: #B42318;
+  --danger-soft: #FDE7E4;
+  --radius: 20px;
+  --radius-sm: 14px;
+  --shadow: 0 1px 2px rgba(80, 50, 30, .05), 0 6px 20px rgba(80, 50, 30, .06);
+  --nav-h: 68px;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { font-size: 100%; -webkit-text-size-adjust: 100%; }
+html[data-scale="lg"] { font-size: 112.5%; }
+html[data-scale="xl"] { font-size: 125%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 1rem/1.5 var(--font); overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+h1, h2, h3, p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+:focus-visible { outline: 3px solid #1D4ED8; outline-offset: 2px; border-radius: 6px; }
+svg.ic { width: 1.4em; height: 1.4em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Khung ứng dụng */
+#view { padding: 16px 16px calc(var(--nav-h) + 28px + env(safe-area-inset-bottom)); max-width: 640px; margin: 0 auto; outline: none; }
+.screen { animation: fadeUp .22s ease-out; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } }
+
+/* Thanh điều hướng: dưới cùng trên điện thoại, cột trái trên desktop */
+#nav {
+  position: fixed; z-index: 20; left: 0; right: 0; bottom: 0;
+  background: var(--surface); border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+#nav .brand { display: none; }
+#nav .links { display: grid; grid-template-columns: repeat(4, 1fr); }
+#nav a.link {
+  min-height: var(--nav-h); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  font-size: .8125rem; font-weight: 500; color: var(--muted); position: relative;
+}
+#nav a.link[aria-current="page"] { color: var(--primary); font-weight: 700; }
+#nav a.link[aria-current="page"]::before {
+  content: ""; position: absolute; top: 0; left: 28%; right: 28%; height: 3px; background: var(--primary); border-radius: 0 0 4px 4px;
+}
+body[data-focus] #nav { display: none; }
+body[data-focus] #view { padding-bottom: 0; }
+
+/* Thành phần chung */
+.card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
+.stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.between { justify-content: space-between; }
+.muted { color: var(--muted); }
+.small { font-size: .875rem; }
+.title { font-size: 1.5rem; font-weight: 800; line-height: 1.25; letter-spacing: -.01em; }
+.subtitle { font-size: 1.0625rem; font-weight: 700; }
+.page-head { padding: 6px 2px 14px; }
+
+.btn {
+  min-height: 48px; padding: 10px 18px; border-radius: 14px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center;
+  transition: transform .08s ease, background-color .15s ease;
+}
+.btn:active:not(:disabled) { transform: scale(.97); }
+.btn:disabled { opacity: .6; }
+.btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(194, 65, 45, .28); }
+.btn-primary:hover:not(:disabled) { background: var(--primary-dark); }
+.btn-soft { background: var(--primary-soft); color: var(--primary-dark); }
+.btn-ghost { background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--line); color: var(--ink); }
+.btn-ghost:hover:not(:disabled) { box-shadow: inset 0 0 0 1.5px #D9C8B6; }
+.btn-good { background: var(--good); color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-lg { min-height: 56px; font-size: 1.0625rem; }
+.btn-block { width: 100%; }
+.icon-btn { width: 48px; height: 48px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.icon-btn:hover { background: rgba(0, 0, 0, .04); }
+
+.bar { height: 10px; background: #F3E7DA; border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--primary); border-radius: 99px; transition: width .3s ease; }
+.bar.good > i { background: var(--good); }
+
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 99px; font-size: .8125rem; font-weight: 600; white-space: nowrap; }
+.tag svg.ic { width: 1.1em; height: 1.1em; }
+.tag-new { background: #F2EBE3; color: var(--muted); }
+.tag-doing { background: var(--warn-soft); color: var(--warn); }
+.tag-done { background: var(--good-soft); color: var(--good); }
+
+.notice { display: flex; gap: 10px; padding: 12px 14px; border-radius: var(--radius-sm); font-size: .9375rem; }
+.notice b { display: block; }
+.notice-warn { background: var(--warn-soft); color: #5F3A00; }
+.notice-bad { background: var(--danger-soft); color: #7A1A12; }
+.notice-good { background: var(--good-soft); color: #084C46; }
+
+.empty { text-align: center; padding: 36px 20px; }
+.empty .big { font-size: 2.75rem; line-height: 1; margin-bottom: 10px; }
+
+/* Thông báo nhanh, đặt phía trên để không che vùng ngón cái */
+#toasts { position: fixed; z-index: 60; top: calc(10px + env(safe-area-inset-top)); left: 12px; right: 12px; display: grid; justify-items: center; pointer-events: none; }
+.toast { background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 14px; font-weight: 600; font-size: .9375rem; max-width: 460px; box-shadow: 0 8px 24px rgba(0, 0, 0, .22); animation: toastIn .22s ease-out; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-10px); } }
+
+/* Bảng trượt từ dưới lên */
+dialog#sheet { border: 0; padding: 0; margin: auto auto 0; width: 100%; max-width: 560px; max-height: 86vh; border-radius: 24px 24px 0 0; background: var(--surface); color: var(--ink); }
+dialog#sheet::backdrop { background: rgba(31, 42, 55, .45); }
+dialog#sheet[open] { animation: sheetUp .22s ease-out; }
+@keyframes sheetUp { from { transform: translateY(30px); opacity: .4; } }
+.sheet-body { padding: 18px 16px calc(18px + env(safe-area-inset-bottom)); display: grid; gap: 14px; }
+.sheet-item { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 10px 12px; min-height: 56px; border-radius: 14px; }
+.sheet-item:hover { background: var(--bg); }
+.sheet-item[aria-current="true"] { background: var(--primary-soft); }
+.sheet-item .no { width: 30px; height: 30px; border-radius: 50%; background: #F3E7DA; display: grid; place-items: center; font-size: .875rem; font-weight: 700; flex: none; }
+.sheet-item .no.ok { background: var(--good); color: #fff; }
+.sheet-item .txt { flex: 1; min-width: 0; font-weight: 600; }
+.guide-step { display: flex; gap: 12px; align-items: flex-start; }
+.guide-step .no { width: 34px; height: 34px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-dark); display: grid; place-items: center; font-weight: 800; flex: none; }
+
+/* --- Trang chủ --- */
+.home-grid { display: grid; gap: 14px; }
+.hero { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 2px 2px; }
+.hero h1 { font-size: 1.5rem; font-weight: 800; line-height: 1.25; }
+.streak { display: flex; flex-direction: column; align-items: center; padding: 6px 12px; background: var(--warn-soft); color: #5F3A00; border-radius: 16px; flex: none; }
+.streak b { font-size: 1.25rem; line-height: 1.2; }
+.streak span { font-size: .75rem; font-weight: 600; white-space: nowrap; }
+.resume { background: var(--ink); color: #fff; }
+.resume .eyebrow { font-size: .875rem; font-weight: 600; opacity: .85; }
+.resume .topic-line { font-size: 1.125rem; font-weight: 700; margin-top: 2px; }
+.resume .sent { margin: 6px 0 14px; opacity: .9; }
+.goal { display: flex; align-items: center; gap: 16px; }
+.ring { width: 76px; height: 76px; flex: none; position: relative; }
+.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 9; }
+.ring .tr { stroke: #F3E7DA; }
+.ring .fg { stroke: var(--primary); stroke-linecap: round; transition: stroke-dashoffset .4s ease; }
+.ring.ok .fg { stroke: var(--good); }
+.ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 1rem; font-weight: 800; }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.tile { background: var(--surface); border-radius: var(--radius-sm); box-shadow: var(--shadow); padding: 12px 8px; text-align: center; min-width: 0; }
+.tile b { display: block; font-size: 1.5rem; font-weight: 800; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.tile span { display: block; font-size: .8125rem; color: var(--muted); line-height: 1.3; margin-top: 2px; }
+.quote { background: var(--primary-soft); box-shadow: none; }
+.quote .en { font-size: 1.125rem; font-weight: 700; }
+.challenge-link { display: flex; align-items: center; gap: 12px; }
+.challenge-link .ico { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: var(--warn-soft); color: var(--warn); flex: none; }
+.challenge-link .grow { flex: 1; min-width: 0; }
+
+/* --- Thẻ chủ đề --- */
+.topic-grid { display: grid; gap: 12px; }
+.topic-card { display: block; transition: transform .12s ease, box-shadow .12s ease; width: 100%; text-align: left; }
+.topic-card:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(80, 50, 30, .06), 0 10px 26px rgba(80, 50, 30, .1); }
+.topic-ico { width: 52px; height: 52px; background: var(--primary-soft); border-radius: 16px; display: grid; place-items: center; font-size: 1.625rem; flex: none; }
+.topic-card h3 { font-size: 1.0625rem; font-weight: 700; line-height: 1.3; }
+
+/* --- Màn hình luyện câu --- */
+.pr-head { display: flex; align-items: center; gap: 4px; margin: -8px -8px 2px; }
+.pr-head .mid { flex: 1; min-width: 0; text-align: center; }
+.pr-head .tn { font-size: .875rem; color: var(--muted); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pr-jump { display: inline-flex; align-items: center; gap: 2px; min-height: 28px; font-weight: 700; }
+.pr-jump svg.ic { width: 1.05em; height: 1.05em; }
+.pr-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding-bottom: 150px; }
+#speakPanel { scroll-margin-bottom: 150px; }
+.sentence { text-align: center; padding: 6px 4px 0; }
+.sentence .en { font-size: 2.25rem; font-weight: 800; line-height: 1.2; letter-spacing: -.015em; overflow-wrap: anywhere; }
+.sentence .en.long { font-size: 1.75rem; }
+.sentence .vi { margin-top: 6px; font-size: 1.0625rem; color: var(--muted); min-height: 1.6em; }
+.toggle-vi { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 2px 10px; font-size: .875rem; font-weight: 600; color: var(--muted); }
+.hint { display: flex; gap: 8px; align-items: center; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--primary-soft); color: #6E2415; font-weight: 600; font-size: .9375rem; }
+.hint.done { background: var(--good-soft); color: #084C46; }
+.panel { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 10px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); background: #F5ECE2; border-radius: 12px; padding: 3px; gap: 2px; }
+.seg button { min-width: 0; min-height: 42px; border-radius: 10px; font-size: .875rem; font-weight: 600; color: var(--muted); padding: 2px 4px; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
+.rec-line { display: flex; align-items: center; justify-content: space-between; font-weight: 700; color: var(--danger); }
+.rec-dot { width: 11px; height: 11px; background: var(--danger); border-radius: 50%; display: inline-block; margin-right: 6px; animation: pulse 1.1s infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
+canvas.meter { width: 100%; height: 64px; display: block; background: #FBF4EC; border-radius: 12px; }
+.meter-status { display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; min-height: 26px; text-align: center; }
+.meter-status[data-s="low"] { color: var(--primary-dark); }
+.meter-status[data-s="good"] { color: var(--good); }
+.meter-status[data-s="quiet"] { color: var(--muted); font-weight: 600; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-mic { min-height: 60px; font-size: 1.125rem; }
+.btn-mic svg.ic { width: 1.6em; height: 1.6em; }
+
+.dock {
+  position: fixed; z-index: 15; left: 0; right: 0; bottom: 0;
+  background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -6px 20px rgba(80, 50, 30, .07);
+  padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
+}
+.dock-in { max-width: 640px; margin: 0 auto; display: grid; gap: 8px; }
+.count-row { display: flex; align-items: center; gap: 10px; }
+.count { font-weight: 800; font-size: 1.25rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.count small { font-size: .875rem; font-weight: 600; color: var(--muted); }
+.count.pop { animation: pop .25s ease; }
+@keyframes pop { 40% { transform: scale(1.25); } }
+.count-row .bar { flex: 1; }
+.dock-btns { display: grid; grid-template-columns: 68px minmax(0, 1fr) 68px; gap: 8px; }
+.nav-side { min-height: 60px; border-radius: 14px; font-size: .75rem; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.15; padding: 2px; box-shadow: inset 0 0 0 1.5px var(--line); }
+.nav-side:disabled { opacity: .4; }
+.nav-side.is-next { background: var(--good); color: #fff; box-shadow: none; }
+.plus { min-height: 60px; font-size: 1.125rem; }
+.plus-idle { background: var(--ink); color: #fff; }
+.plus-soft { background: #F2EBE3; color: var(--ink); }
+
+/* --- Flashcard --- */
+.fc-scene { perspective: 1200px; }
+.fc { display: grid; width: 100%; transform-style: preserve-3d; transition: transform .5s cubic-bezier(.3, .7, .3, 1); cursor: pointer; animation: fadeUp .25s ease-out; }
+.fc.flipped { transform: rotateY(180deg); }
+.fc-face {
+  grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  background: var(--surface); border-radius: 24px; box-shadow: var(--shadow); min-height: 320px; padding: 22px 18px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 10px;
+}
+.fc-back { transform: rotateY(180deg); }
+.fc .word { font-size: 2.5rem; font-weight: 800; line-height: 1.15; overflow-wrap: anywhere; letter-spacing: -.01em; }
+.fc .ipa { font-family: "Segoe UI", "Lucida Sans Unicode", "Noto Sans", "DejaVu Sans", var(--font); font-size: 1.25rem; color: var(--muted); }
+.fc .mean { font-size: 1.75rem; font-weight: 800; color: var(--primary-dark); }
+.fc .ex { font-size: 1.125rem; font-weight: 600; }
+.fc-pad { padding-bottom: 104px; display: grid; gap: 12px; }
+.dock-simple .two .btn { min-height: 60px; }
+
+/* --- Thử thách --- */
+.timer { text-align: center; font-size: 3rem; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.timer.low { color: var(--danger); }
+.ch-stats { display: flex; justify-content: center; gap: 18px; font-weight: 600; color: var(--muted); font-size: .9375rem; }
+.ch-stats b { color: var(--ink); }
+.choice { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 10px 12px; min-height: 64px; border-radius: 16px; box-shadow: inset 0 0 0 1.5px var(--line); background: var(--surface); }
+.choice[aria-pressed="true"] { box-shadow: inset 0 0 0 2.5px var(--primary); background: var(--primary-soft); font-weight: 700; }
+.choice .topic-ico { width: 44px; height: 44px; font-size: 1.375rem; border-radius: 12px; background: var(--bg); }
+.result-num { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+/* --- Tiến độ & biểu đồ 7 ngày --- */
+.chart { position: relative; height: 150px; display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; align-items: end; padding-bottom: 24px; }
+.chart .col { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; border-radius: 6px; outline-offset: 0; }
+.chart .fill { width: min(26px, 70%); background: var(--primary); border-radius: 4px 4px 0 0; min-height: 0; }
+.chart .fill.zero { height: 2px !important; background: var(--line); border-radius: 2px; }
+.chart .lb { position: absolute; bottom: -24px; font-size: .75rem; color: var(--muted); line-height: 24px; }
+.chart .col.today .lb { color: var(--ink); font-weight: 700; }
+.chart .val { font-size: .75rem; font-weight: 700; line-height: 1.5; }
+/* Tooltip chỉ chiếm chỗ khi hiện; cột nửa trái canh trái, cột nửa phải canh phải để không tràn màn hình */
+.chart .tip { display: none; position: absolute; bottom: calc(100% - 30px); left: 0; width: max-content; max-width: 170px; background: var(--ink); color: #fff; padding: 5px 8px; border-radius: 8px; font-size: .75rem; pointer-events: none; z-index: 2; }
+.chart .col:nth-child(n+5) .tip { left: auto; right: 0; }
+.chart .col:hover .tip, .chart .col:focus .tip { display: block; }
+.chart .goal-line { position: absolute; left: 0; right: 0; border-top: 1.5px dashed #B9A895; pointer-events: none; }
+.chart .goal-line span { position: absolute; right: 0; top: -19px; font-size: .75rem; color: var(--muted); background: var(--surface); padding: 0 4px; }
+.badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+.badge { text-align: center; padding: 10px 4px; border-radius: 14px; background: var(--bg); }
+.badge .e { font-size: 1.875rem; line-height: 1.2; }
+.badge p { font-size: .8125rem; font-weight: 600; line-height: 1.25; margin-top: 4px; }
+.badge small { display: block; font-size: .75rem; color: var(--muted); margin-top: 2px; }
+.badge.off .e { filter: grayscale(1); opacity: .35; }
+.badge.off p { color: var(--muted); font-weight: 500; }
+.device { display: flex; gap: 8px; align-items: flex-start; font-size: .9375rem; }
+.device .ok { color: var(--good); }
+.device .no { color: var(--danger); }
+
+/* --- Máy tính bảng & desktop: tận dụng không gian, không phóng to giao diện điện thoại --- */
+@media (min-width: 620px) {
+  .topic-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 960px) {
+  body:not([data-focus]) { padding-left: 232px; }
+  #nav { top: 0; right: auto; width: 232px; border-top: 0; border-right: 1px solid var(--line); padding: 22px 12px; }
+  #nav .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.1875rem; padding: 0 10px 22px; }
+  #nav .brand i { width: 36px; height: 36px; border-radius: 11px; background: var(--primary); color: #fff; display: grid; place-items: center; font-style: normal; }
+  #nav .links { display: grid; grid-template-columns: 1fr; gap: 4px; }
+  #nav a.link { flex-direction: row; justify-content: flex-start; gap: 12px; min-height: 48px; padding: 0 14px; border-radius: 12px; font-size: 1rem; }
+  #nav a.link:hover { background: var(--bg); }
+  #nav a.link[aria-current="page"] { background: var(--primary-soft); }
+  #nav a.link[aria-current="page"]::before { display: none; }
+  #view { max-width: 1080px; padding: 32px 36px 48px; }
+  body[data-focus] #view { max-width: 1040px; }
+  .home-grid { grid-template-columns: 3fr 2fr; align-items: start; }
+  .home-grid > .wide { grid-column: 1 / -1; }
+  .home-col { display: grid; gap: 14px; }
+  .topic-grid { grid-template-columns: repeat(3, 1fr); }
+  .pr-grid { grid-template-columns: 1.15fr 1fr; align-items: start; gap: 18px; padding-bottom: 150px; }
+  .pr-main { position: sticky; top: 20px; }
+  .pr-main .sentence { background: var(--surface); border-radius: 24px; box-shadow: var(--shadow); min-height: 400px; padding: 32px 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .badges { grid-template-columns: repeat(5, 1fr); }
+  .sentence .en { font-size: 3rem; }
+  .sentence .en.long { font-size: 2.5rem; }
+  .dock-in { max-width: 968px; grid-template-columns: 1fr 1fr; align-items: center; gap: 22px; }
+  .dock-btns { grid-template-columns: 96px 1fr 96px; }
+  .dock-simple .dock-in { grid-template-columns: 1fr; max-width: 560px; }
+  .progress-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+  .progress-grid > .wide { grid-column: 1 / -1; }
+  .fc-wrap { max-width: 560px; margin: 0 auto; }
+  dialog#sheet { margin: auto; border-radius: 24px; }
+}
+@media (max-width: 959px) {
+  .progress-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  /* Đang ghi âm: thu gọn để nút Dừng luôn nằm trong tầm ngón cái, không bị thanh dưới che */
+  .pr-grid.is-rec .hint, .pr-grid.is-rec #listenPanel, .pr-grid.is-rec .toggle-vi { display: none; }
+}
+@media (max-width: 400px) {
+  .sentence .en { font-size: 2rem; }
+  .sentence .en.long { font-size: 1.75rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<nav id="nav" aria-label="Điều hướng chính">
+  <div class="brand"><i>A</i>Anna English</div>
+  <div class="links" id="navLinks"></div>
+</nav>
+
+<main id="view" tabindex="-1">
+  <div class="empty muted" id="loading"><div class="big">🗣️</div>Đang tải bài học…</div>
+</main>
+
+<div id="toasts" role="status" aria-live="polite"></div>
+<dialog id="sheet" aria-label="Bảng thông tin"><div class="sheet-body" id="sheetBody"></div></dialog>
+
+<noscript><p style="padding:16px">Ứng dụng cần JavaScript để chạy. Vui lòng bật JavaScript trong trình duyệt.</p></noscript>
+
+<script>
+/* ============================================================
+   PHẦN 1: DỮ LIỆU HỌC TẬP
+   Muốn thêm chủ đề: thêm một phần tử mới vào mảng TOPICS, giao diện tự cập nhật.
+   Tiến độ lưu theo id chủ đề + vị trí câu, nên hãy thêm câu mới vào CUỐI danh sách.
+   ============================================================ */
+const TOPICS = [
+  {
+    id: "greetings", en: "Greetings & Introductions", vi: "Chào hỏi và giới thiệu", icon: "👋",
+    sentences: [
+      { en: "Hello, nice to meet you.", vi: "Xin chào, rất vui được gặp bạn." },
+      { en: "What is your name?", vi: "Bạn tên là gì?" },
+      { en: "My name is Anna.", vi: "Tôi tên là Anna." },
+      { en: "How are you today?", vi: "Hôm nay bạn thế nào?" },
+      { en: "I am fine, thank you.", vi: "Tôi khỏe, cảm ơn bạn." },
+      { en: "Where are you from?", vi: "Bạn đến từ đâu?" },
+      { en: "I am from Vietnam.", vi: "Tôi đến từ Việt Nam." },
+      { en: "See you tomorrow. Goodbye!", vi: "Hẹn gặp bạn ngày mai. Tạm biệt!" }
+    ],
+    words: [
+      { word: "hello", ipa: "/həˈloʊ/", vi: "xin chào", ex: "Hello, Tom!", exVi: "Xin chào, Tom!" },
+      { word: "nice", ipa: "/naɪs/", vi: "vui, dễ chịu, đẹp", ex: "It is a nice day.", exVi: "Hôm nay là một ngày đẹp trời." },
+      { word: "name", ipa: "/neɪm/", vi: "tên", ex: "Her name is Lan.", exVi: "Tên cô ấy là Lan." },
+      { word: "today", ipa: "/təˈdeɪ/", vi: "hôm nay", ex: "It is hot today.", exVi: "Hôm nay trời nóng." },
+      { word: "fine", ipa: "/faɪn/", vi: "khỏe, ổn", ex: "My mother is fine.", exVi: "Mẹ tôi khỏe." },
+      { word: "thank", ipa: "/θæŋk/", vi: "cảm ơn", ex: "Thank you, teacher.", exVi: "Em cảm ơn thầy cô." },
+      { word: "from", ipa: "/frʌm/", vi: "từ, đến từ", ex: "He is from Japan.", exVi: "Anh ấy đến từ Nhật Bản." },
+      { word: "tomorrow", ipa: "/təˈmɑːroʊ/", vi: "ngày mai", ex: "I will call you tomorrow.", exVi: "Ngày mai tôi sẽ gọi cho bạn." }
+    ]
+  },
+  {
+    id: "family", en: "Family", vi: "Gia đình", icon: "👨‍👩‍👧",
+    sentences: [
+      { en: "This is my family.", vi: "Đây là gia đình tôi." },
+      { en: "I have one brother.", vi: "Tôi có một anh trai." },
+      { en: "My mother is a teacher.", vi: "Mẹ tôi là giáo viên." },
+      { en: "My father works in a bank.", vi: "Bố tôi làm việc ở ngân hàng." },
+      { en: "Do you have any sisters?", vi: "Bạn có chị em gái không?" },
+      { en: "My sister is ten years old.", vi: "Em gái tôi mười tuổi." },
+      { en: "We live with our grandparents.", vi: "Chúng tôi sống cùng ông bà." },
+      { en: "I love my family very much.", vi: "Tôi rất yêu gia đình mình." }
+    ],
+    words: [
+      { word: "family", ipa: "/ˈfæməli/", vi: "gia đình", ex: "My family is small.", exVi: "Gia đình tôi nhỏ." },
+      { word: "brother", ipa: "/ˈbrʌðər/", vi: "anh trai, em trai", ex: "My brother is tall.", exVi: "Anh trai tôi cao." },
+      { word: "mother", ipa: "/ˈmʌðər/", vi: "mẹ", ex: "I call my mother every day.", exVi: "Tôi gọi cho mẹ mỗi ngày." },
+      { word: "father", ipa: "/ˈfɑːðər/", vi: "bố, ba", ex: "My father is a doctor.", exVi: "Bố tôi là bác sĩ." },
+      { word: "sister", ipa: "/ˈsɪstər/", vi: "chị gái, em gái", ex: "She is my sister.", exVi: "Cô ấy là chị gái tôi." },
+      { word: "live", ipa: "/lɪv/", vi: "sống, ở", ex: "I live in Hanoi.", exVi: "Tôi sống ở Hà Nội." },
+      { word: "grandparents", ipa: "/ˈɡrænperənts/", vi: "ông bà", ex: "I visit my grandparents.", exVi: "Tôi đi thăm ông bà." },
+      { word: "love", ipa: "/lʌv/", vi: "yêu, rất thích", ex: "I love my children.", exVi: "Tôi yêu các con của tôi." }
+    ]
+  },
+  {
+    id: "food", en: "Food & Drinks", vi: "Đồ ăn và thức uống", icon: "🍜",
+    sentences: [
+      { en: "I am very hungry.", vi: "Tôi đói quá." },
+      { en: "What do you want to eat?", vi: "Bạn muốn ăn gì?" },
+      { en: "I would like some rice.", vi: "Tôi muốn một ít cơm." },
+      { en: "Can I have a coffee, please?", vi: "Cho tôi một ly cà phê nhé?" },
+      { en: "This soup is very good.", vi: "Món súp này rất ngon." },
+      { en: "I drink water every day.", vi: "Tôi uống nước mỗi ngày." },
+      { en: "Do you like chicken?", vi: "Bạn có thích thịt gà không?" },
+      { en: "The bill, please.", vi: "Cho tôi xin hóa đơn." }
+    ],
+    words: [
+      { word: "hungry", ipa: "/ˈhʌŋɡri/", vi: "đói", ex: "The baby is hungry.", exVi: "Em bé đang đói." },
+      { word: "eat", ipa: "/iːt/", vi: "ăn", ex: "We eat at seven.", exVi: "Chúng tôi ăn lúc bảy giờ." },
+      { word: "rice", ipa: "/raɪs/", vi: "cơm, gạo", ex: "I eat rice for lunch.", exVi: "Tôi ăn cơm vào bữa trưa." },
+      { word: "coffee", ipa: "/ˈkɔːfi/", vi: "cà phê", ex: "This coffee is hot.", exVi: "Ly cà phê này nóng." },
+      { word: "soup", ipa: "/suːp/", vi: "súp, canh", ex: "I like hot soup.", exVi: "Tôi thích súp nóng." },
+      { word: "drink", ipa: "/drɪŋk/", vi: "uống", ex: "I drink tea at home.", exVi: "Tôi uống trà ở nhà." },
+      { word: "water", ipa: "/ˈwɔːtər/", vi: "nước", ex: "Can I have some water?", exVi: "Cho tôi xin ít nước được không?" },
+      { word: "chicken", ipa: "/ˈtʃɪkɪn/", vi: "thịt gà, con gà", ex: "This chicken is good.", exVi: "Món gà này ngon." }
+    ]
+  },
+  {
+    id: "shopping", en: "Shopping", vi: "Mua sắm", icon: "🛍️",
+    sentences: [
+      { en: "How much is this shirt?", vi: "Cái áo sơ mi này bao nhiêu tiền?" },
+      { en: "It is too expensive.", vi: "Nó đắt quá." },
+      { en: "Do you have a smaller size?", vi: "Bạn có cỡ nhỏ hơn không?" },
+      { en: "Can I try it on?", vi: "Tôi mặc thử được không?" },
+      { en: "I like this blue dress.", vi: "Tôi thích chiếc váy xanh này." },
+      { en: "I will take this one.", vi: "Tôi sẽ lấy cái này." },
+      { en: "Can I pay by card?", vi: "Tôi trả bằng thẻ được không?" },
+      { en: "Here is your change.", vi: "Đây là tiền thừa của bạn." }
+    ],
+    words: [
+      { word: "shirt", ipa: "/ʃɜːrt/", vi: "áo sơ mi", ex: "This shirt is white.", exVi: "Chiếc áo sơ mi này màu trắng." },
+      { word: "expensive", ipa: "/ɪkˈspensɪv/", vi: "đắt", ex: "That bag is expensive.", exVi: "Cái túi đó đắt." },
+      { word: "size", ipa: "/saɪz/", vi: "cỡ, kích thước", ex: "What size do you need?", exVi: "Bạn cần cỡ nào?" },
+      { word: "try", ipa: "/traɪ/", vi: "thử", ex: "Please try this cake.", exVi: "Bạn hãy thử bánh này nhé." },
+      { word: "blue", ipa: "/bluː/", vi: "màu xanh dương", ex: "My bag is blue.", exVi: "Túi của tôi màu xanh dương." },
+      { word: "dress", ipa: "/dres/", vi: "váy đầm", ex: "She has a red dress.", exVi: "Cô ấy có một chiếc váy đỏ." },
+      { word: "pay", ipa: "/peɪ/", vi: "trả tiền", ex: "I pay for lunch.", exVi: "Tôi trả tiền bữa trưa." },
+      { word: "card", ipa: "/kɑːrd/", vi: "thẻ", ex: "This is my bank card.", exVi: "Đây là thẻ ngân hàng của tôi." }
+    ]
+  },
+  {
+    id: "routine", en: "Daily Routine", vi: "Hoạt động hằng ngày", icon: "⏰",
+    sentences: [
+      { en: "I get up at six.", vi: "Tôi thức dậy lúc sáu giờ." },
+      { en: "I brush my teeth every morning.", vi: "Tôi đánh răng mỗi sáng." },
+      { en: "I have breakfast at home.", vi: "Tôi ăn sáng ở nhà." },
+      { en: "I go to work by bus.", vi: "Tôi đi làm bằng xe buýt." },
+      { en: "What time is it now?", vi: "Bây giờ là mấy giờ?" },
+      { en: "I come home at five.", vi: "Tôi về nhà lúc năm giờ." },
+      { en: "I watch TV in the evening.", vi: "Tôi xem TV vào buổi tối." },
+      { en: "I go to bed at ten.", vi: "Tôi đi ngủ lúc mười giờ." }
+    ],
+    words: [
+      { word: "teeth", ipa: "/tiːθ/", vi: "răng (số nhiều)", ex: "Her teeth are white.", exVi: "Răng cô ấy trắng." },
+      { word: "morning", ipa: "/ˈmɔːrnɪŋ/", vi: "buổi sáng", ex: "I run in the morning.", exVi: "Tôi chạy bộ vào buổi sáng." },
+      { word: "breakfast", ipa: "/ˈbrekfəst/", vi: "bữa sáng", ex: "Breakfast is ready.", exVi: "Bữa sáng đã sẵn sàng." },
+      { word: "work", ipa: "/wɜːrk/", vi: "công việc, làm việc", ex: "I work in an office.", exVi: "Tôi làm việc ở văn phòng." },
+      { word: "bus", ipa: "/bʌs/", vi: "xe buýt", ex: "The bus is late.", exVi: "Xe buýt đến muộn." },
+      { word: "time", ipa: "/taɪm/", vi: "thời gian, giờ", ex: "I have no time.", exVi: "Tôi không có thời gian." },
+      { word: "watch", ipa: "/wɑːtʃ/", vi: "xem", ex: "We watch a movie.", exVi: "Chúng tôi xem một bộ phim." },
+      { word: "evening", ipa: "/ˈiːvnɪŋ/", vi: "buổi tối", ex: "Good evening, everyone.", exVi: "Chào buổi tối mọi người." }
+    ]
+  }
+];
+
+/* Câu truyền cảm hứng, mỗi ngày hiển thị một câu */
+const QUOTES = [
+  { en: "Practice makes perfect.", vi: "Có công mài sắt, có ngày nên kim." },
+  { en: "Little by little, you can do it.", vi: "Từng chút một, bạn sẽ làm được." },
+  { en: "Speak loud, be proud.", vi: "Nói thật to, thật tự hào." },
+  { en: "Every day is a new start.", vi: "Mỗi ngày là một khởi đầu mới." },
+  { en: "Mistakes help you learn.", vi: "Sai lầm giúp bạn học hỏi." },
+  { en: "Believe in yourself.", vi: "Hãy tin vào chính mình." },
+  { en: "Small steps, big dreams.", vi: "Bước chân nhỏ, ước mơ lớn." },
+  { en: "Don't stop. Keep going!", vi: "Đừng dừng lại. Hãy tiếp tục!" },
+  { en: "You are better than yesterday.", vi: "Bạn đã giỏi hơn hôm qua." },
+  { en: "Open your mouth and speak.", vi: "Hãy mở miệng và nói." }
+];
+
+/* Cấu hình chung */
+const TARGET_REPS = 20;
+const CHALLENGE_MS = 5 * 60 * 1000;
+const STORE_KEY = "annaEnglish.v1";
+const SPEEDS = {
+  slow: { label: "Chậm", rate: 0.6 },
+  normal: { label: "Bình thường", rate: 0.9 },
+  fast: { label: "Nhanh", rate: 1.2 }
+};
+const MAX_RECORD_SECONDS = 60;
+const LOUD_TARGET = 0.6;   // vạch mục tiêu trên thang âm lượng 0–1
+const QUIET_LEVEL = 0.12;  // dưới mức này coi như đang im lặng
+
+/* ============================================================
+   PHẦN 2: LƯU TRỮ VÀ TIẾN ĐỘ (localStorage)
+   ============================================================ */
+const defaultState = () => ({
+  sentences: {},      // "greetings:0" -> số lần đã luyện
+  words: {},          // "greetings:0" -> { status: "known" | "learning", wrong: số lần chưa nhớ }
+  days: {},           // "2026-10-30" -> { seconds, reps }
+  last: null,         // { topicId, index } – câu đang học dở
+  lastStudyDate: null,
+  streak: 0,
+  bestStreak: 0,
+  totalReps: 0,
+  badges: {},         // id chủ đề -> ngày đạt huy hiệu
+  goalMin: 15,
+  scale: "md",
+  speed: "normal",
+  showVi: true,
+  seenGuide: false,
+  challenge: null,    // thử thách đang chạy, để khôi phục khi tải lại trang
+  challengeRuns: 0,
+  challengeBest: 0
+});
+
+let storageOk = true;
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return defaultState();
+    const data = JSON.parse(raw);
+    if (!data || typeof data !== "object") return defaultState();
+    return Object.assign(defaultState(), data);
+  } catch (e) {
+    // Trình duyệt chặn bộ nhớ hoặc dữ liệu hỏng: chạy với dữ liệu trống thay vì để ứng dụng lỗi
+    storageOk = isStorageWritable();
+    return defaultState();
+  }
+}
+function isStorageWritable() {
+  try {
+    localStorage.setItem(STORE_KEY + ".test", "1");
+    localStorage.removeItem(STORE_KEY + ".test");
+    return true;
+  } catch (e) { return false; }
+}
+let state = loadState();
+if (!isStorageWritable()) storageOk = false;
+
+function save() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    storageOk = true;
+  } catch (e) { storageOk = false; }
+}
+
+/* Ngày theo giờ địa phương của máy, không dùng UTC để tránh lệch ngày ở Việt Nam */
+const dateKey = (d = new Date()) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const daysAgo = (n) => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate() - n); };
+const dayData = (key = dateKey()) => state.days[key] || { seconds: 0, reps: 0 };
+function todayRecord() {
+  const key = dateKey();
+  if (!state.days[key]) state.days[key] = { seconds: 0, reps: 0 };
+  return state.days[key];
+}
+
+const topicById = (id) => TOPICS.find((t) => t.id === id);
+const sKey = (tid, i) => `${tid}:${i}`;
+const repsOf = (tid, i) => state.sentences[sKey(tid, i)] || 0;
+const isKnown = (tid, i) => (state.words[sKey(tid, i)] || {}).status === "known";
+const totalSentences = () => TOPICS.reduce((n, t) => n + t.sentences.length, 0);
+const totalWords = () => TOPICS.reduce((n, t) => n + t.words.length, 0);
+const doneInTopic = (t) => t.sentences.filter((_, i) => repsOf(t.id, i) >= TARGET_REPS).length;
+const knownInTopic = (t) => t.words.filter((_, i) => isKnown(t.id, i)).length;
+const doneTotal = () => TOPICS.reduce((n, t) => n + doneInTopic(t), 0);
+const knownTotal = () => TOPICS.reduce((n, t) => n + knownInTopic(t), 0);
+const learningWords = () => {
+  const list = [];
+  TOPICS.forEach((t) => t.words.forEach((_, i) => {
+    if ((state.words[sKey(t.id, i)] || {}).status === "learning") list.push({ t, i });
+  }));
+  return list;
+};
+/* Thanh tiến độ tính cả lượt đã luyện dở để người học thấy công sức của mình */
+function topicPercent(t) {
+  if (!t.sentences.length) return 0;
+  const reps = t.sentences.reduce((n, _, i) => n + Math.min(repsOf(t.id, i), TARGET_REPS), 0);
+  return Math.round(reps / (t.sentences.length * TARGET_REPS) * 100);
+}
+function topicStatus(t) {
+  if (t.sentences.length && doneInTopic(t) === t.sentences.length) return "done";
+  const touched = t.sentences.some((_, i) => repsOf(t.id, i) > 0) || t.words.some((_, i) => state.words[sKey(t.id, i)]);
+  return touched ? "doing" : "new";
+}
+function overallPercent() {
+  const units = totalSentences() + totalWords();
+  if (!units) return 0;
+  let score = knownTotal();
+  TOPICS.forEach((t) => t.sentences.forEach((_, i) => { score += Math.min(repsOf(t.id, i), TARGET_REPS) / TARGET_REPS; }));
+  return Math.round(score / units * 100);
+}
+/* Chuỗi ngày chỉ còn hiệu lực nếu học hôm nay hoặc hôm qua */
+function currentStreak() {
+  if (state.lastStudyDate === dateKey() || state.lastStudyDate === dateKey(daysAgo(1))) return state.streak;
+  return 0;
+}
+/* Gọi mỗi khi có hoạt động học thật sự: cập nhật chuỗi ngày và ngày học gần nhất */
+function recordActivity() {
+  const today = dateKey();
+  if (state.lastStudyDate === today) return;
+  state.streak = state.lastStudyDate === dateKey(daysAgo(1)) ? state.streak + 1 : 1;
+  state.lastStudyDate = today;
+  state.bestStreak = Math.max(state.bestStreak, state.streak);
+  if (state.streak >= 2) toast(`🔥 Bạn đã học ${state.streak} ngày liên tiếp!`);
+}
+function addRep(t, i) {
+  const k = sKey(t.id, i);
+  const count = (state.sentences[k] || 0) + 1;
+  state.sentences[k] = count;
+  todayRecord().reps++;
+  state.totalReps++;
+  recordActivity();
+  save();
+  return { count, justDone: count === TARGET_REPS };
+}
+/* Trao huy hiệu một lần duy nhất khi hoàn thành tất cả các câu của chủ đề */
+function awardBadgeIfNew(t) {
+  if (doneInTopic(t) === t.sentences.length && t.sentences.length && !state.badges[t.id]) {
+    state.badges[t.id] = dateKey();
+    save();
+    return true;
+  }
+  return false;
+}
+/* Nơi người học nên quay lại: câu dở, rồi câu chưa xong kế tiếp, rồi chủ đề khác */
+function resumeTarget() {
+  if (!TOPICS.length) return null;
+  const last = state.last && topicById(state.last.topicId);
+  if (last && last.sentences[state.last.index]) {
+    if (repsOf(last.id, state.last.index) < TARGET_REPS) return { t: last, i: state.last.index, started: true };
+    const next = last.sentences.findIndex((_, i) => repsOf(last.id, i) < TARGET_REPS);
+    if (next >= 0) return { t: last, i: next, started: true };
+  }
+  for (const t of TOPICS) {
+    const i = t.sentences.findIndex((_, x) => repsOf(t.id, x) < TARGET_REPS);
+    if (i >= 0) return { t, i, started: !!state.last };
+  }
+  return { t: TOPICS[0], i: 0, started: true, allDone: true };
+}
+
+/* ============================================================
+   PHẦN 3: DỊCH VỤ ÂM THANH
+   ============================================================ */
+
+/* --- Phát giọng mẫu bằng SpeechSynthesis --- */
+const Speech = {
+  supported: "speechSynthesis" in window && "SpeechSynthesisUtterance" in window,
+  voice: null, finish: null, utter: null,
+  init() {
+    if (!this.supported) return;
+    this.pickVoice();
+    try { speechSynthesis.addEventListener("voiceschanged", () => this.pickVoice()); } catch (e) { /* trình duyệt cũ */ }
+  },
+  pickVoice() {
+    const voices = speechSynthesis.getVoices() || [];
+    const us = voices.filter((v) => (v.lang || "").replace("_", "-").toLowerCase() === "en-us");
+    const score = (v) => (v.localService ? 2 : 0) + (/samantha|aria|jenny|google us|natural/i.test(v.name) ? 3 : 0);
+    this.voice = us.sort((a, b) => score(b) - score(a))[0] || null;
+  },
+  /* Trả về Promise với kết quả: ended | canceled | error | unsupported. onState báo trạng thái để cập nhật nút */
+  speak(text, rate, onState = () => {}) {
+    if (!this.supported) { onState("idle"); return Promise.resolve("unsupported"); }
+    this.cancel();
+    return new Promise((resolve) => {
+      let done = false, startTimer, guardTimer, delay;
+      const finish = (result) => {
+        if (done) return;
+        done = true;
+        clearTimeout(startTimer); clearTimeout(guardTimer); clearTimeout(delay);
+        if (this.finish === finish) this.finish = null;
+        onState("idle");
+        resolve(result);
+      };
+      this.finish = finish;
+      onState("loading");
+      const u = new SpeechSynthesisUtterance(text);
+      this.utter = u; // giữ tham chiếu vì Chrome có thể thu hồi và không phát sự kiện kết thúc
+      u.lang = "en-US";
+      u.rate = rate;
+      if (this.voice) u.voice = this.voice;
+      u.onstart = () => {
+        clearTimeout(startTimer);
+        onState("playing");
+        guardTimer = setTimeout(() => finish("ended"), 20000);
+      };
+      u.onend = () => finish("ended");
+      u.onerror = (e) => finish(e.error === "interrupted" || e.error === "canceled" ? "canceled" : "error");
+      // Chờ một nhịp sau cancel() vì một số trình duyệt bỏ qua lệnh speak() gọi ngay sau đó
+      delay = setTimeout(() => {
+        try {
+          speechSynthesis.resume();
+          speechSynthesis.speak(u);
+          startTimer = setTimeout(() => { try { speechSynthesis.cancel(); } catch (e) {} finish("error"); }, 6000);
+        } catch (e) { finish("error"); }
+      }, 60);
+    });
+  },
+  cancel() {
+    if (!this.supported) return;
+    if (this.finish) this.finish("canceled");
+    try { speechSynthesis.cancel(); } catch (e) {}
+  }
+};
+
+/* --- Micro: đo âm lượng bằng AnalyserNode và ghi âm bằng MediaRecorder --- */
+const Mic = {
+  session: null,
+  canUseMic: () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+  canMeasure: () => !!(window.AudioContext || window.webkitAudioContext),
+  canRecord: () => typeof window.MediaRecorder === "function",
+  pickMime() {
+    if (!MediaRecorder.isTypeSupported) return "";
+    return ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus"]
+      .find((m) => MediaRecorder.isTypeSupported(m)) || "";
+  },
+  /* cb gồm: onLive({ measuring, recording }), onLevel(0..1), onDone({ url }), onError(mã lỗi) */
+  async start(cb) {
+    if (this.session) return;
+    if (!this.canUseMic()) { cb.onError(window.isSecureContext === false ? "insecure" : "unsupported"); return; }
+    const session = { cb, cancelled: false, stream: null, ctx: null, rec: null, chunks: [], raf: 0, discard: false };
+    this.session = session;
+    let stream;
+    try {
+      // Chỉ xin quyền micro tại đây, tức là sau khi người dùng đã bấm "Nói theo"
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: false }
+      });
+    } catch (e) {
+      if (session.cancelled) return;
+      this.session = null;
+      const map = {
+        NotAllowedError: "denied", PermissionDeniedError: "denied", SecurityError: "denied",
+        NotFoundError: "nomic", DevicesNotFoundError: "nomic", OverconstrainedError: "nomic",
+        NotReadableError: "busy", TrackStartError: "busy", AbortError: "busy"
+      };
+      cb.onError(map[e && e.name] || "unknown");
+      return;
+    }
+    // Người dùng đã rời màn hình trong lúc chờ cấp quyền: trả micro ngay
+    if (session.cancelled) { stream.getTracks().forEach((tr) => tr.stop()); return; }
+    session.stream = stream;
+
+    const live = { measuring: false, recording: false };
+    try { live.measuring = this.startMeter(session); } catch (e) { live.measuring = false; }
+    try { live.recording = this.startRecorder(session); } catch (e) { live.recording = false; }
+    cb.onLive(live);
+  },
+  startMeter(session) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return false;
+    const ctx = new Ctx();
+    session.ctx = ctx;
+    if (ctx.state === "suspended") ctx.resume().catch(() => {});
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 1024;
+    // Không nối tới loa để tránh tiếng vọng
+    ctx.createMediaStreamSource(session.stream).connect(analyser);
+    const buf = new Uint8Array(analyser.fftSize);
+    const loop = () => {
+      if (this.session !== session) return;
+      analyser.getByteTimeDomainData(buf);
+      let sum = 0;
+      for (let i = 0; i < buf.length; i++) { const x = (buf[i] - 128) / 128; sum += x * x; }
+      const rms = Math.sqrt(sum / buf.length);
+      // Đổi sang decibel rồi quy về 0–1: −55 dB là im lặng, −15 dB là rất to
+      const db = 20 * Math.log10(rms || 1e-6);
+      session.cb.onLevel(Math.max(0, Math.min(1, (db + 55) / 40)));
+      session.raf = requestAnimationFrame(loop);
+    };
+    loop();
+    return true;
+  },
+  startRecorder(session) {
+    if (!this.canRecord()) return false;
+    const mime = this.pickMime();
+    const rec = mime ? new MediaRecorder(session.stream, { mimeType: mime }) : new MediaRecorder(session.stream);
+    session.rec = rec;
+    rec.ondataavailable = (e) => { if (e.data && e.data.size) session.chunks.push(e.data); };
+    rec.onstop = () => {
+      if (session.discard) return;
+      if (!session.chunks.length) { session.cb.onDone({ url: null }); return; }
+      const blob = new Blob(session.chunks, { type: rec.mimeType || mime || "audio/webm" });
+      session.cb.onDone({ url: URL.createObjectURL(blob) });
+    };
+    rec.start();
+    return true;
+  },
+  /* Dừng và giải phóng toàn bộ micro + AudioContext. discard = true nếu bỏ bản ghi */
+  stop(discard = false) {
+    const session = this.session;
+    if (!session) return;
+    this.session = null;
+    session.cancelled = true;
+    session.discard = discard;
+    cancelAnimationFrame(session.raf);
+    const hadRecorder = session.rec && session.rec.state !== "inactive";
+    if (hadRecorder) { try { session.rec.stop(); } catch (e) {} }
+    if (session.stream) session.stream.getTracks().forEach((tr) => tr.stop());
+    if (session.ctx && session.ctx.state !== "closed") session.ctx.close().catch(() => {});
+    if (!hadRecorder && !discard && session.stream) session.cb.onDone({ url: null });
+  }
+};
+
+const MIC_ERRORS = {
+  denied: {
+    title: "Chưa cấp quyền micro",
+    text: "Nhấn biểu tượng ổ khóa cạnh địa chỉ trang, cho phép dùng micro rồi thử lại. Bạn vẫn có thể nói thành tiếng và nhấn +1.",
+    retry: true
+  },
+  nomic: {
+    title: "Không tìm thấy micro",
+    text: "Hãy cắm tai nghe có micro hoặc dùng điện thoại. Bạn vẫn có thể nói thành tiếng và nhấn +1.",
+    retry: true
+  },
+  busy: {
+    title: "Micro đang bận",
+    text: "Hãy đóng ứng dụng khác đang dùng micro (Zalo, Zoom, Meet…) rồi thử lại.",
+    retry: true
+  },
+  insecure: {
+    title: "Trang này chưa được phép dùng micro",
+    text: "Trình duyệt chỉ cho dùng micro trên địa chỉ https hoặc localhost. Hãy mở ứng dụng bằng một trong hai cách đó. Bạn vẫn có thể nghe mẫu và nói theo.",
+    retry: false
+  },
+  unsupported: {
+    title: "Trình duyệt không hỗ trợ micro",
+    text: "Hãy dùng Chrome, Edge hoặc Safari bản mới. Bạn vẫn có thể nghe mẫu, nói thành tiếng và nhấn +1.",
+    retry: false
+  },
+  unknown: {
+    title: "Chưa bật được micro",
+    text: "Đã có lỗi khi mở micro. Hãy thử lại hoặc tải lại trang.",
+    retry: true
+  }
+};
+const SPEECH_UNSUPPORTED = "Trình duyệt này không phát được giọng đọc. Hãy dùng Chrome, Edge hoặc Safari bản mới để nghe mẫu.";
+const SPEECH_FAILED = "Chưa phát được tiếng. Hãy kiểm tra âm lượng máy rồi nhấn nghe lại.";
+
+/* ============================================================
+   PHẦN 4: TIỆN ÍCH GIAO DIỆN
+   ============================================================ */
+const $ = (sel, root = document) => root.querySelector(sel);
+const view = $("#view");
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ic = (name) => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
+const ICONS = {
+  home: '<path d="M3 11l9-8 9 8"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
+  book: '<path d="M4 5a2 2 0 0 1 2-2h14v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h14v-4"/>',
+  cards: '<rect x="3" y="7" width="14" height="14" rx="2.5"/><path d="M8 3h11a2 2 0 0 1 2 2v11"/>',
+  chart: '<path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-7"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  next: '<path d="M9 5l7 7-7 7"/>',
+  down: '<path d="M6 9l6 6 6-6"/>',
+  play: '<path d="M7 4.5v15l12-7.5z" fill="currentColor"/>',
+  stop: '<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>',
+  sound: '<path d="M4 9.5v5h4l5 4v-13l-5 4z"/><path d="M16.5 9a4 4 0 0 1 0 6"/><path d="M19 6.5a8 8 0 0 1 0 11"/>',
+  mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/>',
+  micOff: '<path d="M4 4l16 16"/><path d="M9 9v2a3 3 0 0 0 4.6 2.5"/><path d="M15 10V6a3 3 0 0 0-5.7-1.3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 10 5.5"/><path d="M18.5 11.5c0 .8-.1 1.5-.4 2.2"/><path d="M12 18v3"/>',
+  redo: '<path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v5h5"/>',
+  check: '<path d="M4.5 12.5l5 5 10-11"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+  eyeOff: '<path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4"/><path d="M6.2 6.7A17 17 0 0 0 2 12s3.5 7 10 7a10 10 0 0 0 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+  help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .8c0 1.8-2.5 2-2.5 4"/><path d="M12 17.5v.01"/>',
+  bolt: '<path d="M13 2L4.5 13.5H11L10 22l9-12h-6.5z"/>',
+  warn: '<path d="M12 3l10 18H2z"/><path d="M12 10v5"/><path d="M12 18v.01"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  list: '<path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6v.01M3.5 12v.01M3.5 18v.01"/>'
+};
+const bar = (pct, cls = "") =>
+  `<div class="bar ${cls}" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>`;
+const statusTag = (s) => ({
+  new: `<span class="tag tag-new">Chưa học</span>`,
+  doing: `<span class="tag tag-doing">${ic("book")}Đang học</span>`,
+  done: `<span class="tag tag-done">${ic("check")}Hoàn thành</span>`
+}[s]);
+const mmss = (sec) => `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
+const minutesOf = (sec) => Math.floor(sec / 60);
+
+let toastTimer = 0;
+function toast(msg) {
+  const box = $("#toasts");
+  box.innerHTML = `<div class="toast">${esc(msg)}</div>`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { box.innerHTML = ""; }, 3000);
+}
+
+const sheet = $("#sheet");
+function openSheet(html) {
+  $("#sheetBody").innerHTML = html;
+  if (sheet.open) return;
+  if (sheet.showModal) sheet.showModal(); else sheet.setAttribute("open", "");
+}
+function closeSheet() {
+  if (!sheet.open) return;
+  if (sheet.close) sheet.close(); else sheet.removeAttribute("open");
+}
+sheet.addEventListener("click", (e) => { if (e.target === sheet) closeSheet(); });
+
+/* Hiệu ứng pháo giấy nhẹ, không chạy nếu người dùng tắt chuyển động */
+function confetti() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = document.createElement("canvas");
+  c.style.cssText = "position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:70";
+  c.width = innerWidth; c.height = innerHeight;
+  document.body.appendChild(c);
+  const g = c.getContext("2d");
+  const colors = ["#C2412D", "#F2A541", "#0B6B63", "#FDEBE4"];
+  const parts = Array.from({ length: 70 }, () => ({
+    x: c.width / 2, y: c.height * .45,
+    vx: (Math.random() - .5) * 11, vy: -Math.random() * 11 - 3,
+    s: 5 + Math.random() * 5, r: Math.random() * 6, col: colors[Math.floor(Math.random() * 4)]
+  }));
+  const start = performance.now();
+  (function frame(now) {
+    const t = now - start;
+    g.clearRect(0, 0, c.width, c.height);
+    g.globalAlpha = Math.max(0, 1 - t / 1500);
+    parts.forEach((p) => {
+      p.x += p.vx; p.y += p.vy; p.vy += .32; p.r += .15;
+      g.save(); g.translate(p.x, p.y); g.rotate(p.r); g.fillStyle = p.col;
+      g.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * .6); g.restore();
+    });
+    if (t < 1500) requestAnimationFrame(frame); else c.remove();
+  })(start);
+}
+const vibrate = (ms) => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} };
+
+function storageNotice() {
+  return storageOk ? "" : `<div class="notice notice-warn">${ic("warn")}<div><b>Tiến độ chưa được lưu</b>Trình duyệt đang chặn lưu dữ liệu (có thể do chế độ ẩn danh). Hãy mở bằng cửa sổ thường để giữ tiến độ.</div></div>`;
+}
+const emptyData = () => `<div class="card empty"><div class="big">📭</div><p class="subtitle">Chưa có dữ liệu bài học</p><p class="muted">Hãy thêm chủ đề vào mảng TOPICS ở đầu file.</p></div>`;
+const notFound = () => `<div class="card empty screen"><div class="big">🧭</div><p class="subtitle">Không tìm thấy nội dung này</p><p class="muted" style="margin-bottom:14px">Bài học có thể đã được đổi tên.</p><a class="btn btn-primary" href="#/home">Về trang chủ</a></div>`;
+
+/* Nút loa dùng chung: phát một đoạn tiếng Anh và đổi trạng thái của chính nút đó */
+function sayFromButton(btn, text, rate) {
+  const icon = btn.querySelector("[data-icon]");
+  const label = btn.querySelector("[data-label]");
+  const baseLabel = label ? label.dataset.base || (label.dataset.base = label.textContent) : "";
+  if (!Speech.supported) { toast(SPEECH_UNSUPPORTED); return; }
+  Speech.speak(text, rate, (s) => {
+    if (!btn.isConnected) return;
+    if (label) label.textContent = s === "loading" ? "Đang chuẩn bị…" : s === "playing" ? "Đang phát…" : baseLabel;
+    if (icon) icon.innerHTML = s === "playing" ? ic("sound") : ic("play");
+    btn.setAttribute("aria-busy", s === "idle" ? "false" : "true");
+  }).then((r) => { if (r === "error") toast(SPEECH_FAILED); });
+}
+
+/* ============================================================
+   PHẦN 5: CÁC MÀN HÌNH
+   ============================================================ */
+
+/* --- 5.1 Trang chủ --- */
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 11) return "Chào buổi sáng!";
+  if (h < 14) return "Chào buổi trưa!";
+  if (h < 18) return "Chào buổi chiều!";
+  return "Chào buổi tối!";
+}
+function dateVi(d = new Date()) {
+  const names = ["Chủ nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+  return `${names[d.getDay()]}, ${d.getDate()} tháng ${d.getMonth() + 1}`;
+}
+function quoteOfDay() {
+  const d = new Date();
+  const dayOfYear = Math.floor((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(d.getFullYear(), 0, 0)) / 864e5);
+  return QUOTES[dayOfYear % QUOTES.length];
+}
+function goalRing() {
+  const sec = dayData().seconds;
+  const goalSec = state.goalMin * 60;
+  const ratio = Math.min(1, sec / goalSec);
+  const C = 2 * Math.PI * 33;
+  return `<div class="ring ${ratio >= 1 ? "ok" : ""}">
+    <svg viewBox="0 0 76 76" aria-hidden="true"><circle class="tr" cx="38" cy="38" r="33"/><circle class="fg" cx="38" cy="38" r="33" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - ratio)}"/></svg>
+    <b>${ratio >= 1 ? ic("check") : Math.round(ratio * 100) + "%"}</b></div>`;
+}
+function renderHome() {
+  if (!TOPICS.length) { view.innerHTML = emptyData(); return; }
+  const today = dayData();
+  const streak = currentStreak();
+  const target = resumeTarget();
+  const q = quoteOfDay();
+  const min = minutesOf(today.seconds);
+  const goalDone = today.seconds >= state.goalMin * 60;
+  const ch = state.challenge;
+  const sentence = target.t.sentences[target.i];
+  view.innerHTML = `<div class="screen stack">
+    ${storageNotice()}
+    ${window.isSecureContext === false ? `<div class="notice notice-warn">${ic("warn")}<div><b>Micro chưa dùng được trên địa chỉ này</b>Trình duyệt chỉ cho dùng micro trên https hoặc localhost. Các phần còn lại vẫn hoạt động.</div></div>` : ""}
+    <header class="hero">
+      <div><h1>${greeting()}</h1><p class="muted">${dateVi()}</p></div>
+      <div class="streak" title="Số ngày học liên tiếp"><b>🔥 ${streak}</b><span>ngày liên tiếp</span></div>
+    </header>
+    <div class="home-grid">
+      <div class="home-col stack">
+        <section class="card resume">
+          <p class="eyebrow">${target.allDone ? "Bạn đã hoàn thành toàn bộ câu 🎉" : target.started ? "Tiếp tục học" : "Bài đầu tiên của bạn"}</p>
+          <p class="topic-line">${target.t.icon} ${esc(target.t.vi)} · Câu ${target.i + 1}/${target.t.sentences.length}</p>
+          <p class="sent">${esc(sentence.en)} · ${repsOf(target.t.id, target.i)}/${TARGET_REPS} lần</p>
+          <a class="btn btn-primary btn-lg btn-block" href="#/practice/${target.t.id}/${target.i}">${ic("mic")}Bắt đầu học ngay</a>
+        </section>
+        <section class="card goal">
+          ${goalRing()}
+          <div>
+            <p class="subtitle">Mục tiêu hôm nay: ${state.goalMin} phút</p>
+            <p class="muted">${goalDone ? "Bạn đã đạt mục tiêu. Giỏi lắm!" : `Đã học ${min} phút. Từng chút một nhé.`}</p>
+          </div>
+        </section>
+        <section class="tiles" aria-label="Thành tích">
+          <div class="tile"><b>${today.reps}</b><span>lần nói hôm nay</span></div>
+          <div class="tile"><b>${doneTotal()}<small class="small muted">/${totalSentences()}</small></b><span>câu hoàn thành</span></div>
+          <div class="tile"><b>${knownTotal()}<small class="small muted">/${totalWords()}</small></b><span>từ đã nhớ</span></div>
+        </section>
+      </div>
+      <div class="home-col stack">
+        <section class="card stack" style="gap:8px">
+          <div class="row between"><p class="subtitle">Tiến độ chương trình</p><b>${overallPercent()}%</b></div>
+          ${bar(overallPercent())}
+        </section>
+        <a class="card challenge-link" href="#/challenge">
+          <span class="ico">${ic("bolt")}</span>
+          <span class="grow"><b>${ch ? "Tiếp tục thử thách" : "Thử thách 5 phút"}</b><br><span class="muted small">Nghe nhanh, nói theo, tăng phản xạ</span></span>
+          ${ic("next")}
+        </a>
+        <section class="card quote">
+          <p class="small muted" style="color:#6E2415">Câu nói hôm nay</p>
+          <div class="row between" style="align-items:flex-start">
+            <div><p class="en" lang="en">${esc(q.en)}</p><p>${esc(q.vi)}</p></div>
+            <button class="icon-btn" data-act="say" data-text="${esc(q.en)}" aria-label="Nghe câu này">${ic("sound")}</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* --- 5.2 Danh sách chủ đề --- */
+function renderTopics() {
+  if (!TOPICS.length) { view.innerHTML = emptyData(); return; }
+  view.innerHTML = `<div class="screen">
+    <header class="page-head"><h1 class="title">Chủ đề</h1><p class="muted">Chọn một chủ đề và luyện nói từng câu.</p></header>
+    <div class="topic-grid">${TOPICS.map((t) => {
+      const pct = topicPercent(t);
+      const st = topicStatus(t);
+      const first = t.sentences.findIndex((_, i) => repsOf(t.id, i) < TARGET_REPS);
+      return `<a class="card topic-card" href="#/practice/${t.id}/${first < 0 ? 0 : first}">
+        <div class="row" style="align-items:flex-start;margin-bottom:12px">
+          <span class="topic-ico" aria-hidden="true">${t.icon}</span>
+          <div style="min-width:0"><h3 lang="en">${esc(t.en)}</h3><p class="muted small">${esc(t.vi)}</p></div>
+        </div>
+        <div class="row between" style="margin-bottom:6px">
+          ${statusTag(st)}
+          <span class="small muted"><b style="color:var(--ink)">${doneInTopic(t)}/${t.sentences.length}</b> câu · ${pct}%</span>
+        </div>
+        ${bar(pct, st === "done" ? "good" : "")}
+      </a>`;
+    }).join("")}</div>
+  </div>`;
+}
+
+/* --- 5.3 Màn hình luyện câu --- */
+let P = null;              // trạng thái của màn hình luyện hiện tại
+let practiceSessionReps = 0;
+
+function renderPractice(topicId, rawIndex) {
+  const t = topicById(topicId);
+  const index = parseInt(rawIndex, 10);
+  if (!t || !t.sentences[index]) { view.innerHTML = notFound(); return; }
+  state.last = { topicId: t.id, index };
+  save();
+  P = {
+    t, index, s: t.sentences[index],
+    listen: "idle",       // idle | loading | playing
+    mic: "idle",          // idle | requesting | recording | recorded | measured | error
+    micErr: null, live: null, recUrl: null, seconds: 0, timer: 0,
+    meter: "quiet", goodUntil: 0, loudSeen: false, history: [],
+    heard: false, spoke: false, audio: null, playing: false, speechNote: null
+  };
+  const long = P.s.en.length > 22;
+  const done = repsOf(t.id, index) >= TARGET_REPS;
+  view.innerHTML = `<div class="screen">
+    <header class="pr-head">
+      <a class="icon-btn" href="#/topics" aria-label="Quay lại danh sách chủ đề">${ic("back")}</a>
+      <div class="mid">
+        <p class="tn">${t.icon} ${esc(t.vi)}</p>
+        <button class="pr-jump" data-act="pickSentence" aria-label="Chọn câu khác, đang ở câu ${index + 1} trên ${t.sentences.length}">Câu ${index + 1}/${t.sentences.length}${ic("down")}</button>
+      </div>
+      <button class="icon-btn" data-act="guide" aria-label="Xem hướng dẫn">${ic("help")}</button>
+    </header>
+    <div style="margin-bottom:6px">${bar(topicPercent(t), doneInTopic(t) === t.sentences.length ? "good" : "")}</div>
+    <div class="pr-grid">
+      <section class="pr-main">
+        <div class="sentence">
+          <h1 class="en ${long ? "long" : ""}" lang="en">${esc(P.s.en)}</h1>
+          <p class="vi" id="viText" ${state.showVi ? "" : "hidden"}>${esc(P.s.vi)}</p>
+          <button class="toggle-vi" data-act="toggleVi" id="viToggle"></button>
+        </div>
+      </section>
+      <div class="stack" style="gap:10px">
+        <div class="hint" id="hint" aria-live="polite"></div>
+        <section class="panel" id="listenPanel" aria-label="Nghe mẫu">
+          <button class="btn btn-lg btn-block" id="listenBtn" data-act="listen"></button>
+          <div class="seg" role="group" aria-label="Tốc độ đọc" id="speedSeg"></div>
+          <div id="listenNote" hidden></div>
+        </section>
+        <section class="panel" id="speakPanel" aria-label="Luyện nói theo"></section>
+      </div>
+    </div>
+  </div>
+  <div class="dock"><div class="dock-in">
+    <div class="count-row">
+      <span class="count" id="count" aria-live="polite"></span>
+      <div style="flex:1" id="countBar"></div>
+    </div>
+    <div class="dock-btns">
+      <button class="nav-side" data-act="prevSentence" ${index === 0 ? "disabled" : ""} aria-label="Câu trước">${ic("back")}Câu trước</button>
+      <button class="btn plus" id="plusBtn" data-act="plusOne"></button>
+      <button class="nav-side" id="nextBtn" data-act="nextSentence" aria-label="Câu tiếp theo">${ic("next")}Câu tiếp</button>
+    </div>
+  </div></div>`;
+  P.alreadyDone = done;
+  syncVi(); syncListen(); syncSpeed(); syncSpeak(); syncCounter(); syncStep();
+  if (!state.seenGuide) {
+    state.seenGuide = true;
+    save();
+    openGuide();
+  }
+}
+
+const practiceReps = () => repsOf(P.t.id, P.index);
+function syncVi() {
+  const on = state.showVi;
+  const vi = $("#viText"), btn = $("#viToggle");
+  if (vi) vi.hidden = !on;
+  if (btn) btn.innerHTML = `${ic(on ? "eyeOff" : "eye")}${on ? "Ẩn nghĩa tiếng Việt" : "Hiện nghĩa tiếng Việt"}`;
+}
+function syncSpeed() {
+  const box = $("#speedSeg");
+  if (!box) return;
+  box.innerHTML = Object.entries(SPEEDS).map(([k, v]) =>
+    `<button data-act="setSpeed" data-speed="${k}" aria-pressed="${state.speed === k}">${v.label}</button>`).join("");
+}
+function syncListen() {
+  const btn = $("#listenBtn");
+  if (!btn || !P) return;
+  const isNext = currentStep() === 1;
+  btn.className = `btn btn-lg btn-block ${isNext ? "btn-primary" : "btn-soft"}`;
+  if (!Speech.supported) {
+    btn.disabled = true;
+    btn.innerHTML = `${ic("warn")}Không phát được giọng đọc`;
+  } else if (P.listen === "loading") {
+    btn.innerHTML = `${ic("clock")}Đang chuẩn bị…`;
+  } else if (P.listen === "playing") {
+    btn.innerHTML = `${ic("stop")}Đang phát… Nhấn để dừng`;
+  } else {
+    btn.innerHTML = `${ic("play")}${P.heard ? "Nghe lại mẫu" : "Nghe mẫu"}`;
+  }
+  const note = $("#listenNote");
+  const msg = !Speech.supported ? SPEECH_UNSUPPORTED : P.speechNote;
+  note.hidden = !msg;
+  note.innerHTML = msg ? `<div class="notice notice-warn">${ic("warn")}<div>${esc(msg)}</div></div>` : "";
+}
+
+/* Vẽ lại khu vực micro theo đúng trạng thái hiện tại */
+function syncSpeak() {
+  const box = $("#speakPanel");
+  if (!box || !P) return;
+  const isNext = currentStep() === 2;
+  const startCls = isNext ? "btn-primary" : "btn-soft";
+  let html = "";
+  switch (P.mic) {
+    case "requesting":
+      html = `<button class="btn btn-soft btn-mic btn-block" disabled>${ic("mic")}Đang chờ bạn cho phép dùng micro…</button>`;
+      break;
+    case "recording":
+      html = `
+        <div class="rec-line"><span>${P.live.recording ? `<i class="rec-dot"></i>Đang ghi âm` : `<i class="rec-dot"></i>Đang đo âm lượng`}</span><span id="recTime">${mmss(P.seconds)}</span></div>
+        ${P.live.measuring
+          ? `<canvas class="meter" id="meter" role="img" aria-label="Thanh đo âm lượng giọng nói, có vạch mục tiêu"></canvas>
+             <div class="meter-status" id="meterStatus" data-s="quiet" aria-live="polite">${ic("mic")}Mình đang nghe, hãy nói đi!</div>`
+          : `<div class="notice notice-warn">${ic("warn")}<div>Trình duyệt không đo được âm lượng, nhưng vẫn đang ghi âm. Hãy nói thật to nhé.</div></div>`}
+        <button class="btn btn-danger btn-mic btn-block" data-act="stopMic">${ic("stop")}Dừng</button>`;
+      break;
+    case "recorded":
+      html = `
+        <div class="notice ${P.loudSeen || !P.live.measuring ? "notice-good" : "notice-warn"}">${ic(P.loudSeen || !P.live.measuring ? "check" : "mic")}
+          <div>${!P.live.measuring ? "Đã ghi âm. Hãy nghe lại giọng của bạn." : P.loudSeen ? "Đã ghi âm. Bạn nói đủ to rồi!" : "Đã ghi âm. Lần sau thử nói to hơn nhé!"}</div></div>
+        <div class="two">
+          <button class="btn btn-soft" data-act="playback">${ic(P.playing ? "stop" : "play")}${P.playing ? "Đang phát…" : "Nghe lại"}</button>
+          <button class="btn btn-ghost" data-act="startMic">${ic("redo")}Nói lại</button>
+        </div>`;
+      break;
+    case "measured":
+      html = `
+        <div class="notice notice-warn">${ic("warn")}<div>Chưa có bản ghi để nghe lại${Mic.canRecord() ? "" : " vì trình duyệt không hỗ trợ ghi âm"}. Bạn vẫn có thể luyện nói và nhấn +1.</div></div>
+        <button class="btn ${startCls} btn-mic btn-block" data-act="startMic">${ic("mic")}Nói theo</button>`;
+      break;
+    case "error": {
+      const err = MIC_ERRORS[P.micErr] || MIC_ERRORS.unknown;
+      html = `
+        <div class="notice notice-bad">${ic("micOff")}<div><b>${esc(err.title)}</b>${esc(err.text)}</div></div>
+        ${err.retry ? `<button class="btn btn-ghost btn-block" data-act="startMic">${ic("redo")}Thử lại</button>` : ""}`;
+      break;
+    }
+    default:
+      html = `<button class="btn ${startCls} btn-mic btn-block" data-act="startMic">${ic("mic")}Nói theo</button>
+        <p class="small muted" style="text-align:center">Đo độ to giọng nói và ghi âm để bạn tự nghe lại, không chấm phát âm.</p>`;
+  }
+  box.innerHTML = html;
+  const grid = box.closest(".pr-grid");
+  if (grid) grid.classList.toggle("is-rec", P.mic === "recording");
+  if (P.mic === "recording" && P.live.measuring) setupCanvas();
+  if (P.mic === "recording" || P.mic === "error" || P.mic === "recorded") box.scrollIntoView({ block: "nearest" });
+}
+function setupCanvas() {
+  const c = $("#meter");
+  if (!c) return;
+  const dpr = window.devicePixelRatio || 1;
+  c.width = c.clientWidth * dpr;
+  c.height = c.clientHeight * dpr;
+}
+function syncCounter() {
+  const count = practiceReps();
+  $("#count").innerHTML = `${count}<small>/${TARGET_REPS} lần</small>`;
+  const pct = Math.min(100, Math.round(count / TARGET_REPS * 100));
+  $("#countBar").innerHTML = bar(pct, count >= TARGET_REPS ? "good" : "");
+}
+/* Bước kế tiếp người học nên làm: chỉ một nút được tô nổi bật tại mỗi thời điểm */
+function currentStep() {
+  if (!P) return 0;
+  if (practiceReps() >= TARGET_REPS) return 4;
+  if (!P.heard && Speech.supported) return 1;
+  // Micro không dùng được vẫn học được: nói thành tiếng rồi tự xác nhận +1
+  if (!P.spoke && P.mic !== "error") return 2;
+  return 3;
+}
+function syncStep() {
+  if (!P) return;
+  const step = currentStep();
+  const count = practiceReps();
+  const hint = $("#hint");
+  const plus = $("#plusBtn");
+  const next = $("#nextBtn");
+  const t = P.t;
+  const left = t.sentences.length - doneInTopic(t);
+  plus.className = `btn plus ${step === 3 ? "btn-primary" : step === 4 ? "plus-soft" : "plus-idle"}`;
+  plus.innerHTML = step === 4 ? `<b>+1</b> Luyện thêm` : `<b>+1</b> Xong 1 lần`;
+  next.classList.toggle("is-next", step === 4);
+  hint.classList.toggle("done", step === 4);
+  let text;
+  if (step === 1) text = "Bước 1: Nhấn Nghe mẫu để nghe cách phát âm.";
+  else if (step === 2) text = count === 0 ? "Bước 2: Bật micro và nói theo thật to." : `Tiếp tục nào! Nói thật to lần thứ ${count + 1}.`;
+  else if (step === 3) text = P.mic === "error" ? "Hãy nói to theo mẫu, rồi nhấn +1 sau mỗi lần." : "Bước 3: Nhấn +1 sau mỗi lần luyện nói.";
+  else if (left === 0) text = `Tuyệt vời! Bạn đã hoàn thành cả chủ đề.`;
+  else if (P.alreadyDone) text = `Câu này đã hoàn thành. Luyện thêm hoặc sang câu tiếp nhé.`;
+  else text = `Tuyệt vời! Bạn đã luyện câu này ${TARGET_REPS} lần.${left <= 3 ? ` Chỉ còn ${left} câu nữa để hoàn thành chủ đề.` : ""}`;
+  hint.innerHTML = `${ic(step === 4 ? "check" : "next")}<span>${esc(text)}</span>`;
+  syncListen();
+  if (P.mic === "idle" || P.mic === "measured") syncSpeak();
+}
+
+function drawMeter(level) {
+  const c = $("#meter");
+  if (!c || !c.width) return;
+  const g = c.getContext("2d");
+  const w = c.width, h = c.height;
+  const hist = P.history;
+  const bars = 36;
+  hist.push(level);
+  if (hist.length > bars) hist.shift();
+  g.clearRect(0, 0, w, h);
+  const bw = w / bars;
+  hist.forEach((lv, i) => {
+    const bh = Math.max(3, lv * h);
+    g.fillStyle = lv >= LOUD_TARGET ? "#0B6B63" : "#C2412D";
+    g.globalAlpha = lv >= LOUD_TARGET ? 1 : .7;
+    const x = (bars - hist.length + i) * bw;
+    g.fillRect(x + bw * .18, h - bh, bw * .64, bh);
+  });
+  // Vạch mục tiêu
+  g.globalAlpha = 1;
+  const y = h - LOUD_TARGET * h;
+  g.strokeStyle = "#1F2A37";
+  g.lineWidth = Math.max(1, (window.devicePixelRatio || 1) * 1.2);
+  g.setLineDash([6, 5]);
+  g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke();
+  g.setLineDash([]);
+}
+function onLevel(level) {
+  if (!P || P.mic !== "recording") return;
+  drawMeter(level);
+  const now = performance.now();
+  if (level >= LOUD_TARGET) { P.goodUntil = now + 700; P.loudSeen = true; }
+  // Giữ trạng thái "đủ to" thêm một nhịp để chữ không nhấp nháy
+  const next = now < P.goodUntil ? "good" : level >= QUIET_LEVEL ? "low" : "quiet";
+  if (next !== P.meter) {
+    P.meter = next;
+    const el = $("#meterStatus");
+    if (el) {
+      el.dataset.s = next;
+      el.innerHTML = next === "good" ? `${ic("check")}Tốt lắm! Đủ to rồi.`
+        : next === "low" ? `${ic("sound")}Nói to hơn!`
+        : `${ic("mic")}Mình đang nghe, hãy nói đi!`;
+    }
+  }
+}
+function startMic() {
+  if (!P || P.mic === "requesting" || P.mic === "recording") return;
+  Speech.cancel();
+  stopPlayback();
+  clearRecording();
+  P.mic = "requesting";
+  P.loudSeen = false; P.history = []; P.meter = "quiet"; P.seconds = 0;
+  syncSpeak();
+  const owner = P;
+  Mic.start({
+    onLive(live) {
+      if (P !== owner) return;
+      if (!live.measuring && !live.recording) {
+        Mic.stop(true);
+        P.mic = "error"; P.micErr = "unsupported";
+        syncSpeak(); syncStep();
+        return;
+      }
+      P.live = live;
+      P.mic = "recording";
+      P.seconds = 0;
+      P.timer = setInterval(() => {
+        if (P !== owner) return;
+        P.seconds++;
+        markActive();
+        const el = $("#recTime");
+        if (el) el.textContent = mmss(P.seconds);
+        if (P.seconds >= MAX_RECORD_SECONDS) { toast("Đã tự dừng sau 1 phút."); stopMic(); }
+      }, 1000);
+      syncSpeak();
+    },
+    onLevel,
+    onDone({ url }) {
+      if (P !== owner) { if (url) URL.revokeObjectURL(url); return; }
+      P.recUrl = url;
+      P.mic = url ? "recorded" : "measured";
+      syncSpeak();
+    },
+    onError(code) {
+      if (P !== owner) return;
+      P.mic = "error";
+      P.micErr = code;
+      syncSpeak();
+      syncStep();
+    }
+  });
+}
+function stopMic() {
+  if (!P || P.mic !== "recording") return;
+  clearInterval(P.timer);
+  P.spoke = true;
+  Mic.stop(false);
+  syncStep();
+}
+function stopPlayback() {
+  if (P && P.audio) {
+    P.audio.pause();
+    P.audio = null;
+    if (P.playing) { P.playing = false; if (P.mic === "recorded") syncSpeak(); }
+  }
+}
+function clearRecording() {
+  if (P && P.recUrl) { URL.revokeObjectURL(P.recUrl); P.recUrl = null; }
+}
+function togglePlayback() {
+  if (!P || !P.recUrl) return;
+  if (P.playing) { stopPlayback(); return; }
+  Speech.cancel();
+  const owner = P;
+  const audio = new Audio(P.recUrl);
+  const finish = () => {
+    if (P !== owner || P.audio !== audio) return;
+    P.audio = null; P.playing = false; syncSpeak();
+  };
+  audio.onended = finish;
+  audio.onerror = () => { finish(); toast("Không phát lại được bản ghi. Hãy thử ghi lại."); };
+  P.audio = audio; P.playing = true;
+  syncSpeak();
+  const p = audio.play();
+  if (p && p.catch) p.catch(() => { finish(); });
+}
+function listenModel() {
+  if (!P || !Speech.supported) return;
+  if (P.listen !== "idle") { Speech.cancel(); return; }
+  if (P.mic === "recording") stopMic();
+  stopPlayback();
+  P.speechNote = null;
+  const owner = P;
+  Speech.speak(P.s.en, SPEEDS[state.speed].rate, (s) => {
+    if (P !== owner) return;
+    P.listen = s;
+    syncListen();
+  }).then((r) => {
+    if (P !== owner) return;
+    if (r === "error") {
+      P.speechNote = SPEECH_FAILED;
+      syncListen();
+    } else if (r === "ended") {
+      P.heard = true;
+      syncStep();
+    }
+  });
+}
+function plusOne() {
+  if (!P) return;
+  if (P.mic === "recording") stopMic();
+  const { count, justDone } = addRep(P.t, P.index);
+  practiceSessionReps++;
+  P.heard = true;
+  P.spoke = false;
+  syncCounter();
+  const el = $("#count");
+  el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop");
+  vibrate(15);
+  if (justDone) {
+    P.alreadyDone = false;
+    confetti();
+    vibrate([30, 40, 30]);
+    if (awardBadgeIfNew(P.t)) openBadge(P.t);
+  } else if (count === 5) toast("Tốt lắm! Đã được 5 lần rồi.");
+  else if (count === 10) toast("Đã được nửa chặng, cố lên!");
+  else if (count === 15) toast("Sắp xong rồi, chỉ còn 5 lần nữa!");
+  syncStep();
+  if (P.mic === "idle") syncSpeak();
+}
+function gotoSentence(i) { location.replace(`#/practice/${P.t.id}/${i}`); }
+function nextSentence() {
+  const t = P.t;
+  if (P.index + 1 < t.sentences.length) { gotoSentence(P.index + 1); return; }
+  // Ở câu cuối: quay về câu còn dở, nếu không còn thì về danh sách chủ đề
+  const left = t.sentences.findIndex((_, i) => repsOf(t.id, i) < TARGET_REPS);
+  if (left >= 0 && left !== P.index) gotoSentence(left);
+  else location.hash = "#/topics";
+}
+function openPicker() {
+  const t = P.t;
+  openSheet(`
+    <div class="row between"><h2 class="subtitle">Chọn câu</h2><button class="icon-btn" data-act="closeSheet" aria-label="Đóng">${ic("x")}</button></div>
+    <div>${t.sentences.map((s, i) => {
+      const r = repsOf(t.id, i);
+      const ok = r >= TARGET_REPS;
+      return `<button class="sheet-item" data-act="jumpSentence" data-i="${i}" aria-current="${i === P.index}">
+        <span class="no ${ok ? "ok" : ""}">${ok ? ic("check") : i + 1}</span>
+        <span class="txt" lang="en">${esc(s.en)}</span>
+        <span class="small muted">${r}/${TARGET_REPS}</span>
+      </button>`;
+    }).join("")}</div>`);
+}
+function openGuide() {
+  const steps = [
+    ["1", "Nhấn <b>Nghe mẫu</b> để nghe cách phát âm."],
+    ["2", "Bật micro và <b>nói theo thật to</b>. Bạn có thể nghe lại giọng của mình."],
+    ["3", "Nhấn <b>+1</b> sau mỗi lần luyện nói."],
+    ["🎯", "Mục tiêu: lặp lại mỗi câu <b>20 lần</b>. Không cần xong một lúc, ứng dụng tự lưu cho bạn."]
+  ];
+  openSheet(`
+    <h2 class="subtitle">Cách luyện nói</h2>
+    <div class="stack">${steps.map(([n, txt]) => `<div class="guide-step"><span class="no">${n}</span><p>${txt}</p></div>`).join("")}</div>
+    <p class="small muted">Mẹo: nói thành tiếng, đừng đọc thầm. Tăng tốc độ khi đã quen miệng.</p>
+    <button class="btn btn-primary btn-lg btn-block" data-act="closeSheet">Mình hiểu rồi</button>`);
+}
+function openBadge(t) {
+  openSheet(`
+    <div style="text-align:center"><div style="font-size:3.5rem;line-height:1.2">🏅</div>
+      <h2 class="title">Huy hiệu mới!</h2>
+      <p class="muted">Bạn đã hoàn thành chủ đề ${t.icon} ${esc(t.vi)}. Quá giỏi!</p></div>
+    <a class="btn btn-primary btn-lg btn-block" href="#/vocab/${t.id}" data-act="closeSheet">Học từ vựng của chủ đề này</a>
+    <a class="btn btn-ghost btn-block" href="#/topics" data-act="closeSheet">Chọn chủ đề khác</a>`);
+}
+/* Giải phóng toàn bộ tài nguyên khi rời màn hình hoặc đổi câu */
+function cleanupPractice() {
+  if (!P) return;
+  clearInterval(P.timer);
+  Mic.stop(true);
+  Speech.cancel();
+  stopPlayback();
+  clearRecording();
+  P = null;
+}
+
+/* --- 5.4 Từ vựng --- */
+let V = null;
+function renderVocabHome() {
+  if (!TOPICS.length) { view.innerHTML = emptyData(); return; }
+  const learning = learningWords();
+  view.innerHTML = `<div class="screen">
+    <header class="page-head">
+      <h1 class="title">Từ vựng</h1>
+      <p class="muted">Đã nhớ ${knownTotal()}/${totalWords()} từ. Mỗi lượt chỉ vài phút thôi.</p>
+    </header>
+    <div class="stack">
+      ${learning.length ? `<a class="btn btn-primary btn-lg btn-block" href="#/vocab/review">${ic("redo")}Ôn ${learning.length} từ chưa nhớ</a>` : ""}
+      <div class="topic-grid">${TOPICS.map((t) => {
+        const known = knownInTopic(t);
+        const pct = Math.round(known / t.words.length * 100);
+        const finished = known === t.words.length;
+        return `<a class="card topic-card" href="#/vocab/${t.id}">
+          <div class="row" style="margin-bottom:12px">
+            <span class="topic-ico" aria-hidden="true">${t.icon}</span>
+            <div style="min-width:0"><h3 lang="en">${esc(t.en)}</h3><p class="muted small">${esc(t.vi)}</p></div>
+          </div>
+          <div class="row between" style="margin-bottom:6px">
+            ${finished ? `<span class="tag tag-done">${ic("check")}Đã nhớ hết</span>` : `<span class="small muted">Đã nhớ</span>`}
+            <b class="small">${known}/${t.words.length} từ</b>
+          </div>
+          ${bar(pct, finished ? "good" : "")}
+        </a>`;
+      }).join("")}</div>
+    </div>
+  </div>`;
+}
+/* Hàng đợi: từ chưa nhớ lên đầu (sai nhiều xếp trước), rồi đến từ mới */
+function buildQueue(items) {
+  const rec = ({ t, i }) => state.words[sKey(t.id, i)] || {};
+  const learning = items.filter((x) => rec(x).status === "learning").sort((a, b) => (rec(b).wrong || 0) - (rec(a).wrong || 0));
+  const fresh = items.filter((x) => !rec(x).status);
+  return [...learning, ...fresh];
+}
+function renderVocabSession(id) {
+  const isReview = id === "review";
+  const t = isReview ? null : topicById(id);
+  if (!isReview && !t) { view.innerHTML = notFound(); return; }
+  const items = isReview ? learningWords() : t.words.map((_, i) => ({ t, i }));
+  V = { id, t, items, queue: buildQueue(items), flipped: false, title: isReview ? "Ôn từ chưa nhớ" : t.vi };
+  // Vào ôn lại nhưng đã nhớ hết thì hiện màn hình hoàn tất, không để thẻ trống
+  drawVocab();
+}
+const vocabKnownCount = () => V.items.filter(({ t, i }) => isKnown(t.id, i)).length;
+function drawVocab() {
+  const total = V.items.length;
+  const known = vocabKnownCount();
+  const pct = total ? Math.round(known / total * 100) : 0;
+  const head = `<header class="pr-head">
+      <a class="icon-btn" href="#/vocab" aria-label="Quay lại danh sách từ vựng">${ic("back")}</a>
+      <div class="mid"><p class="tn">${esc(V.title)}</p><b>Đã nhớ ${known}/${total} từ</b></div>
+      <span style="width:48px"></span>
+    </header>
+    <div style="margin-bottom:14px">${bar(pct, pct === 100 ? "good" : "")}</div>`;
+
+  if (!V.queue.length) {
+    const allKnown = known === total && total > 0;
+    view.innerHTML = `<div class="screen">${head}
+      <div class="card empty fc-wrap">
+        <div class="big">${allKnown ? "🎉" : "📚"}</div>
+        <p class="subtitle">${total === 0 ? "Bạn không còn từ nào cần ôn" : allKnown ? "Bạn đã nhớ hết các từ này!" : "Xong lượt này rồi"}</p>
+        <p class="muted" style="margin-bottom:16px">${total === 0 ? "Hãy chọn một chủ đề để học thêm từ mới." : "Ôn lại sau vài ngày để nhớ lâu hơn."}</p>
+        <div class="stack">
+          ${V.t ? `<button class="btn btn-soft btn-block" data-act="vocabRestart">${ic("redo")}Ôn lại từ đầu</button>` : ""}
+          <a class="btn btn-primary btn-block" href="#/vocab">Về danh sách từ vựng</a>
+        </div>
+      </div></div>`;
+    return;
+  }
+  const { t, i } = V.queue[0];
+  const w = t.words[i];
+  const rec = state.words[sKey(t.id, i)] || {};
+  view.innerHTML = `<div class="screen">${head}
+    <div class="fc-wrap fc-pad">
+      <div class="fc-scene">
+        <div class="fc" id="fc" data-act="flip">
+          <div class="fc-face fc-front" id="fcFront">
+            ${rec.status === "learning" ? `<span class="tag tag-doing">${ic("redo")}Cần ôn lại</span>` : `<span class="tag tag-new">Từ mới</span>`}
+            <p class="word" lang="en">${esc(w.word)}</p>
+            <p class="ipa">${esc(w.ipa)}</p>
+            <button class="btn btn-soft" data-act="say" data-text="${esc(w.word)}">
+              <span data-icon>${ic("play")}</span><span data-label>Nghe phát âm</span></button>
+            <p class="small muted">Thử nhớ nghĩa rồi chạm vào thẻ để lật</p>
+          </div>
+          <div class="fc-face fc-back" id="fcBack" inert aria-hidden="true">
+            <p class="small muted" lang="en">${esc(w.word)}</p>
+            <p class="mean">${esc(w.vi)}</p>
+            <p class="ex" lang="en">${esc(w.ex)}</p>
+            <p class="muted">${esc(w.exVi)}</p>
+            <button class="btn btn-soft" data-act="say" data-text="${esc(w.ex)}">
+              <span data-icon>${ic("play")}</span><span data-label>Nghe câu ví dụ</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dock dock-simple"><div class="dock-in" id="fcDock"></div></div>
+  </div>`;
+  V.flipped = false;
+  syncFlipDock();
+}
+function syncFlipDock() {
+  const box = $("#fcDock");
+  if (!box) return;
+  box.innerHTML = V.flipped
+    ? `<div class="two">
+         <button class="btn btn-ghost" data-act="rateAgain">${ic("redo")}Chưa nhớ</button>
+         <button class="btn btn-good" data-act="rateKnown">${ic("check")}Đã nhớ</button>
+       </div>`
+    : `<button class="btn btn-primary btn-lg btn-block" data-act="flip">Lật thẻ</button>`;
+}
+function flipCard() {
+  if (!V || !V.queue.length) return;
+  V.flipped = !V.flipped;
+  Speech.cancel();
+  const fc = $("#fc");
+  fc.classList.toggle("flipped", V.flipped);
+  const front = $("#fcFront"), back = $("#fcBack");
+  front.inert = V.flipped; back.inert = !V.flipped;
+  front.setAttribute("aria-hidden", V.flipped);
+  back.setAttribute("aria-hidden", !V.flipped);
+  syncFlipDock();
+}
+function rateWord(known) {
+  if (!V || !V.queue.length) return;
+  const item = V.queue.shift();
+  const k = sKey(item.t.id, item.i);
+  const rec = state.words[k] || { wrong: 0 };
+  if (known) {
+    rec.status = "known";
+  } else {
+    rec.status = "learning";
+    rec.wrong = (rec.wrong || 0) + 1;
+    // Từ chưa nhớ quay lại sau 2 thẻ, sớm hơn các từ còn lại trong hàng đợi
+    V.queue.splice(Math.min(2, V.queue.length), 0, item);
+  }
+  state.words[k] = rec;
+  recordActivity();
+  save();
+  Speech.cancel();
+  if (known && !V.queue.length && vocabKnownCount() === V.items.length) confetti();
+  drawVocab();
+}
+
+/* --- 5.5 Thử thách 5 phút --- */
+let C = { pick: null, result: null, timer: 0, status: "idle" };
+const challengeActive = () => state.challenge;
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function renderChallenge() {
+  if (!TOPICS.length) { view.innerHTML = emptyData(); return; }
+  const ch = challengeActive();
+  if (ch) {
+    if (Date.now() >= ch.endAt || !topicById(ch.topicId)) { finishChallenge(); return; }
+    drawChallengeRun();
+    speakChallenge();
+    return;
+  }
+  if (C.result) { drawChallengeResult(); return; }
+  if (!C.pick || !topicById(C.pick)) {
+    const target = resumeTarget();
+    C.pick = target ? target.t.id : TOPICS[0].id;
+  }
+  drawChallengeSetup();
+}
+function drawChallengeSetup() {
+  view.innerHTML = `<div class="screen">
+    <header class="page-head">
+      <div class="row"><a class="icon-btn" href="#/home" aria-label="Về trang chủ" style="margin-left:-12px">${ic("back")}</a><h1 class="title">Thử thách 5 phút</h1></div>
+      <p class="muted">Máy đọc nhanh, bạn nói theo ngay. Không cần hoàn hảo, chỉ cần mở miệng!</p>
+    </header>
+    <div class="stack fc-wrap" style="padding-bottom:104px">
+      <p class="subtitle">Chọn chủ đề</p>
+      <div class="stack" style="gap:8px" role="group" aria-label="Chọn chủ đề thử thách">
+        ${TOPICS.map((t) => `<button class="choice" data-act="pickChallenge" data-id="${t.id}" aria-pressed="${C.pick === t.id}">
+          <span class="topic-ico" aria-hidden="true">${t.icon}</span>
+          <span style="min-width:0;flex:1"><span lang="en">${esc(t.en)}</span><br><span class="small muted">${esc(t.vi)}</span></span>
+          ${C.pick === t.id ? ic("check") : ""}
+        </button>`).join("")}
+      </div>
+      ${state.challengeRuns ? `<p class="small muted">Kỷ lục của bạn: ${state.challengeBest} lần lặp trong một thử thách.</p>` : ""}
+      ${Speech.supported ? "" : `<div class="notice notice-warn">${ic("warn")}<div>${SPEECH_UNSUPPORTED} Bạn vẫn có thể đọc câu trên màn hình và nói theo.</div></div>`}
+    </div>
+    <div class="dock dock-simple"><div class="dock-in">
+      <button class="btn btn-primary btn-lg btn-block" data-act="startChallenge">${ic("bolt")}Bắt đầu thử thách</button>
+    </div></div>
+  </div>`;
+}
+function startChallenge(topicId) {
+  const t = topicById(topicId);
+  if (!t) return;
+  const bag = shuffle(t.sentences.map((_, i) => i));
+  const now = Date.now();
+  state.challenge = { topicId, startAt: now, endAt: now + CHALLENGE_MS, reps: 0, seen: [], current: bag.pop(), bag };
+  C.result = null;
+  save();
+  renderChallenge();
+}
+function nextChallengeSentence() {
+  const ch = state.challenge;
+  const t = topicById(ch.topicId);
+  if (!ch.bag.length) {
+    let bag = shuffle(t.sentences.map((_, i) => i));
+    // Tránh lặp lại ngay câu vừa nói khi xáo lại
+    if (bag.length > 1 && bag[bag.length - 1] === ch.current) { bag.unshift(bag.pop()); }
+    ch.bag = bag;
+  }
+  ch.current = ch.bag.pop();
+}
+function drawChallengeRun() {
+  const ch = state.challenge;
+  const t = topicById(ch.topicId);
+  const s = t.sentences[ch.current];
+  view.innerHTML = `<div class="screen">
+    <header class="pr-head">
+      <button class="icon-btn" data-act="endChallenge" aria-label="Kết thúc sớm và xem kết quả">${ic("x")}</button>
+      <div class="mid"><p class="tn">${t.icon} ${esc(t.vi)}</p><b>Thử thách 5 phút</b></div>
+      <span style="width:48px"></span>
+    </header>
+    <div class="stack fc-wrap" style="padding-bottom:150px;gap:16px">
+      <div class="timer" id="chTimer" role="timer" aria-label="Thời gian còn lại"></div>
+      <div class="ch-stats"><span><b id="chSeen">${ch.seen.length}</b> câu</span><span><b id="chReps">${ch.reps}</b> lần lặp</span></div>
+      <div class="sentence">
+        <h1 class="en ${s.en.length > 22 ? "long" : ""}" lang="en">${esc(s.en)}</h1>
+        <p class="vi">${esc(s.vi)}</p>
+      </div>
+      <div class="hint" id="chStatus" aria-live="polite"></div>
+      <button class="btn btn-soft btn-block" data-act="chReplay" ${Speech.supported ? "" : "disabled"}>${ic("play")}Nghe lại</button>
+    </div>
+    <div class="dock dock-simple"><div class="dock-in">
+      <div class="two">
+        <button class="btn btn-ghost" data-act="chRepeat" style="min-height:60px">${ic("redo")}Lặp lại câu này</button>
+        <button class="btn btn-primary" data-act="chNext" style="min-height:60px">Xong, câu tiếp${ic("next")}</button>
+      </div>
+    </div></div>
+  </div>`;
+  tickChallenge();
+  clearInterval(C.timer);
+  C.timer = setInterval(tickChallenge, 250);
+}
+function setChStatus(text, iconName = "mic") {
+  const el = $("#chStatus");
+  if (el) el.innerHTML = `${ic(iconName)}<span>${esc(text)}</span>`;
+}
+function speakChallenge() {
+  const ch = state.challenge;
+  if (!ch) return;
+  const s = topicById(ch.topicId).sentences[ch.current];
+  if (!Speech.supported) { setChStatus("Đọc câu trên màn hình và nói thật to!"); return; }
+  const owner = ch.current + ":" + ch.startAt;
+  Speech.speak(s.en, SPEEDS.fast.rate, (st) => {
+    if (st === "loading") setChStatus("Đang chuẩn bị…", "clock");
+    else if (st === "playing") setChStatus("Đang phát mẫu, lắng nghe nhé…", "sound");
+  }).then((r) => {
+    const now = state.challenge;
+    if (!now || now.current + ":" + now.startAt !== owner) return;
+    if (r === "ended") setChStatus("Đến lượt bạn. Nói theo thật to!");
+    else if (r === "error") setChStatus("Chưa phát được tiếng. Nhấn Nghe lại, hoặc đọc câu trên màn hình.", "warn");
+  });
+}
+function tickChallenge() {
+  const ch = state.challenge;
+  if (!ch) return;
+  const left = Math.max(0, ch.endAt - Date.now());
+  if (left <= 0) { finishChallenge(); return; }
+  const el = $("#chTimer");
+  if (el) {
+    el.textContent = mmss(Math.ceil(left / 1000));
+    el.classList.toggle("low", left <= 30000);
+  }
+}
+function challengeRep() {
+  const ch = state.challenge;
+  const t = topicById(ch.topicId);
+  addRep(t, ch.current);
+  ch.reps++;
+  if (!ch.seen.includes(ch.current)) ch.seen.push(ch.current);
+  markActive();
+  vibrate(15);
+}
+function finishChallenge() {
+  clearInterval(C.timer);
+  Speech.cancel();
+  const ch = state.challenge;
+  if (!ch) return;
+  const t = topicById(ch.topicId);
+  const seconds = Math.round((Math.min(Date.now(), ch.endAt) - ch.startAt) / 1000);
+  C.result = { topicId: ch.topicId, seconds, sentences: ch.seen.length, reps: ch.reps, record: ch.reps > state.challengeBest && ch.reps > 0, badge: t && awardBadgeIfNew(t) };
+  C.pick = ch.topicId;
+  state.challengeRuns++;
+  state.challengeBest = Math.max(state.challengeBest, ch.reps);
+  state.challenge = null;
+  save();
+  if (C.result.reps > 0) confetti();
+  drawChallengeResult();
+}
+function resultMessage(r) {
+  if (r.reps === 0) return "Không sao cả! Lần sau hãy thử nói thành tiếng một câu nhé.";
+  if (r.record && state.challengeRuns > 1) return "Kỷ lục mới! Bạn đang tiến bộ từng ngày.";
+  if (r.reps >= 40) return "Quá xuất sắc! Phản xạ của bạn đang rất nhanh.";
+  if (r.reps >= 15) return "Tuyệt vời! Bạn đã nói rất nhiều trong 5 phút.";
+  return "Bạn làm tốt lắm! Mỗi lần mở miệng là một bước tiến.";
+}
+function drawChallengeResult() {
+  const r = C.result;
+  const t = topicById(r.topicId);
+  view.innerHTML = `<div class="screen stack fc-wrap" style="padding-top:8px">
+    <div class="empty" style="padding:18px 8px 4px">
+      <div class="big">${r.reps ? "🏆" : "💪"}</div>
+      <h1 class="title">Kết quả thử thách</h1>
+      <p class="muted">${t ? `${t.icon} ${esc(t.vi)}` : ""}</p>
+    </div>
+    <div class="result-num">
+      <div class="tile"><b>${r.sentences}</b><span>câu đã luyện</span></div>
+      <div class="tile"><b>${mmss(r.seconds)}</b><span>tổng thời gian</span></div>
+      <div class="tile"><b>${r.reps}</b><span>lần lặp</span></div>
+    </div>
+    <div class="notice notice-good">${ic("check")}<div>${esc(resultMessage(r))}${r.badge ? " Bạn còn nhận được huy hiệu mới của chủ đề này!" : ""}</div></div>
+    <button class="btn btn-primary btn-lg btn-block" data-act="restartChallenge">${ic("redo")}Bắt đầu lại</button>
+    <button class="btn btn-ghost btn-block" data-act="changeChallenge">Đổi chủ đề</button>
+    <a class="btn btn-ghost btn-block" href="#/home">Về trang chủ</a>
+  </div>`;
+}
+function cleanupChallenge() {
+  clearInterval(C.timer);
+  Speech.cancel();
+}
+
+/* --- 5.6 Tiến độ --- */
+const BADGE_RULES = [
+  { e: "🌱", name: "Câu đầu tiên", got: () => doneTotal() >= 1, how: "Xong 1 câu" },
+  { e: "🔥", name: "3 ngày liên tiếp", got: () => state.bestStreak >= 3, how: "Học 3 ngày liền" },
+  { e: "⭐", name: "7 ngày liên tiếp", got: () => state.bestStreak >= 7, how: "Học 7 ngày liền" },
+  { e: "🗣️", name: "100 lần nói", got: () => state.totalReps >= 100, how: "Nói 100 lần" },
+  { e: "⚡", name: "Vượt thử thách", got: () => state.challengeBest > 0, how: "Làm 1 thử thách" }
+];
+function chart7Days() {
+  const days = [];
+  const names = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+  for (let n = 6; n >= 0; n--) {
+    const d = daysAgo(n);
+    const data = dayData(dateKey(d));
+    days.push({ name: n === 0 ? "Nay" : names[d.getDay()], full: `${d.getDate()}/${d.getMonth() + 1}`, min: data.seconds / 60, reps: data.reps, today: n === 0 });
+  }
+  const top = Math.max(state.goalMin, ...days.map((d) => d.min));
+  const pct = (v) => v / top * 100;
+  // Vùng vẽ cao 126px (150px trừ 24px nhãn); vạch mục tiêu tính theo cùng tỉ lệ với cột
+  return `<div class="chart" aria-hidden="true">
+      <div class="goal-line" style="bottom:calc(24px + (100% - 24px) * ${pct(state.goalMin) / 100})"><span>Mục tiêu ${state.goalMin} phút</span></div>
+      ${days.map((d) => {
+        const m = Math.round(d.min);
+        return `<div class="col ${d.today ? "today" : ""}" tabindex="0">
+          <span class="tip">${d.full}: ${m} phút · ${d.reps} lần nói</span>
+          ${d.today && d.min > 0 ? `<span class="val">${m}</span>` : ""}
+          <div class="fill ${d.min > 0 ? "" : "zero"}" style="height:${Math.max(pct(d.min), d.min > 0 ? 2 : 0)}%"></div>
+          <span class="lb">${d.name}</span>
+        </div>`;
+      }).join("")}
+    </div>
+    <table class="sr"><caption>Thời gian học 7 ngày gần nhất</caption>
+      <tr><th>Ngày</th><th>Số phút</th><th>Số lần nói</th></tr>
+      ${days.map((d) => `<tr><td>${d.full}</td><td>${Math.round(d.min)}</td><td>${d.reps}</td></tr>`).join("")}
+    </table>`;
+}
+function renderProgress() {
+  const hasData = state.totalReps > 0 || Object.keys(state.words).length > 0 || Object.values(state.days).some((d) => d.seconds > 0);
+  const today = dayData();
+  const totalSec = Object.values(state.days).reduce((n, d) => n + (d.seconds || 0), 0);
+  const scaleBtn = (k, label) => `<button data-act="setScale" data-scale="${k}" aria-pressed="${state.scale === k}">${label}</button>`;
+  const goalBtn = (m) => `<button data-act="setGoal" data-min="${m}" aria-pressed="${state.goalMin === m}">${m} phút</button>`;
+  const dev = (ok, text, fix) => `<div class="device"><span class="${ok ? "ok" : "no"}">${ic(ok ? "check" : "x")}</span><div>${text}${ok ? "" : `<br><span class="small muted">${fix}</span>`}</div></div>`;
+  const secure = window.isSecureContext !== false;
+  view.innerHTML = `<div class="screen">
+    <header class="page-head">
+      <h1 class="title">Tiến độ của bạn</h1>
+      <p class="muted">${state.lastStudyDate ? `Ngày học gần nhất: ${state.lastStudyDate.split("-").reverse().join("/")}` : "Bạn chưa bắt đầu buổi học nào."}</p>
+    </header>
+    <div class="progress-grid">
+      ${storageNotice() ? `<div class="wide">${storageNotice()}</div>` : ""}
+      ${hasData ? `
+      <section class="wide">
+        <div class="tiles" style="grid-template-columns:repeat(auto-fit,minmax(100px,1fr))">
+          <div class="tile"><b>🔥 ${currentStreak()}</b><span>ngày liên tiếp</span></div>
+          <div class="tile"><b>${state.totalReps}</b><span>lần luyện nói</span></div>
+          <div class="tile"><b>${doneTotal()}/${totalSentences()}</b><span>câu hoàn thành</span></div>
+          <div class="tile"><b>${knownTotal()}/${totalWords()}</b><span>từ đã nhớ</span></div>
+          <div class="tile"><b>${minutesOf(today.seconds)}</b><span>phút hôm nay</span></div>
+          <div class="tile"><b>${minutesOf(totalSec)}</b><span>tổng số phút</span></div>
+        </div>
+      </section>
+      <section class="card">
+        <p class="subtitle" style="margin-bottom:20px">Thời gian học 7 ngày qua (phút)</p>
+        ${chart7Days()}
+      </section>` : `
+      <section class="card empty wide">
+        <div class="big">🌱</div>
+        <p class="subtitle">Chưa có dữ liệu học tập</p>
+        <p class="muted" style="margin-bottom:16px">Nói câu tiếng Anh đầu tiên, tiến độ sẽ hiện ở đây.</p>
+        <a class="btn btn-primary" href="#/topics">Chọn chủ đề để bắt đầu</a>
+      </section>`}
+      <section class="card stack">
+        <p class="subtitle">Theo từng chủ đề</p>
+        ${TOPICS.map((t) => `
+          <a href="#/practice/${t.id}/${Math.max(0, t.sentences.findIndex((_, i) => repsOf(t.id, i) < TARGET_REPS))}" style="display:block">
+            <div class="row between" style="margin-bottom:5px"><b class="small">${t.icon} ${esc(t.vi)}</b><span class="small muted" style="white-space:nowrap">${doneInTopic(t)}/${t.sentences.length} câu · ${knownInTopic(t)}/${t.words.length} từ</span></div>
+            ${bar(topicPercent(t), topicStatus(t) === "done" ? "good" : "")}
+          </a>`).join("")}
+      </section>
+      <section class="card stack wide">
+        <p class="subtitle">Huy hiệu</p>
+        <div class="badges">
+          ${TOPICS.map((t) => {
+            const got = !!state.badges[t.id];
+            return `<div class="badge ${got ? "" : "off"}"><div class="e">${t.icon}</div><p>${esc(t.vi)}</p><small>${got ? "Đã đạt" : "Chưa đạt"}</small></div>`;
+          }).join("")}
+          ${BADGE_RULES.map((b) => {
+            const got = b.got();
+            return `<div class="badge ${got ? "" : "off"}"><div class="e">${b.e}</div><p>${b.name}</p><small>${got ? "Đã đạt" : b.how}</small></div>`;
+          }).join("")}
+        </div>
+      </section>
+      <section class="card stack">
+        <p class="subtitle">Cài đặt</p>
+        <div><p class="small muted" style="margin-bottom:4px">Mục tiêu mỗi ngày</p><div class="seg">${goalBtn(10)}${goalBtn(15)}${goalBtn(20)}</div></div>
+        <div><p class="small muted" style="margin-bottom:4px">Cỡ chữ</p><div class="seg">${scaleBtn("md", "Vừa")}${scaleBtn("lg", "Lớn")}${scaleBtn("xl", "Rất lớn")}</div></div>
+        <div id="resetBox"><button class="btn btn-ghost btn-block" data-act="askReset">Xóa toàn bộ tiến độ</button></div>
+      </section>
+      <section class="card stack">
+        <p class="subtitle">Thiết bị của bạn</p>
+        ${dev(Speech.supported, "Nghe giọng đọc mẫu", "Hãy dùng Chrome, Edge hoặc Safari bản mới.")}
+        ${dev(secure && Mic.canUseMic(), "Dùng micro", secure ? "Trình duyệt này chưa hỗ trợ micro." : "Micro chỉ chạy trên địa chỉ https hoặc localhost.")}
+        ${dev(Mic.canMeasure(), "Đo độ to giọng nói", "Trình duyệt này chưa hỗ trợ đo âm lượng.")}
+        ${dev(Mic.canRecord(), "Ghi âm và nghe lại", "Trình duyệt này chưa hỗ trợ ghi âm.")}
+      </section>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   PHẦN 6: XỬ LÝ THAO TÁC (mọi nút bấm dùng thuộc tính data-act)
+   ============================================================ */
+const Actions = {
+  say(el) { sayFromButton(el, el.dataset.text, SPEEDS.normal.rate); },
+  closeSheet() { closeSheet(); },
+
+  /* Luyện câu */
+  listen: listenModel,
+  setSpeed(el) {
+    state.speed = el.dataset.speed;
+    save();
+    syncSpeed();
+    if (P && P.listen !== "idle") { Speech.cancel(); listenModel(); }
+  },
+  toggleVi() { state.showVi = !state.showVi; save(); syncVi(); },
+  startMic, stopMic,
+  playback: togglePlayback,
+  plusOne,
+  prevSentence() { if (P && P.index > 0) gotoSentence(P.index - 1); },
+  nextSentence() { if (P) nextSentence(); },
+  pickSentence() { if (P) openPicker(); },
+  jumpSentence(el) { closeSheet(); gotoSentence(parseInt(el.dataset.i, 10)); },
+  guide: openGuide,
+
+  /* Từ vựng */
+  flip: flipCard,
+  rateKnown() { rateWord(true); },
+  rateAgain() { rateWord(false); },
+  vocabRestart() {
+    if (!V) return;
+    // Ôn lại toàn bộ từ của chủ đề, từ đang "chưa nhớ" vẫn được ưu tiên lên đầu
+    const fresh = buildQueue(V.items);
+    const rest = V.items.filter((x) => !fresh.includes(x));
+    V.queue = [...fresh, ...rest];
+    drawVocab();
+  },
+
+  /* Thử thách */
+  pickChallenge(el) { C.pick = el.dataset.id; drawChallengeSetup(); },
+  startChallenge() { startChallenge(C.pick); },
+  chReplay() { speakChallenge(); },
+  chRepeat() { if (!state.challenge) return; challengeRep(); save(); drawChallengeRun(); speakChallenge(); },
+  chNext() { if (!state.challenge) return; challengeRep(); nextChallengeSentence(); save(); drawChallengeRun(); speakChallenge(); },
+  endChallenge() { finishChallenge(); },
+  restartChallenge() { startChallenge(C.result.topicId); },
+  changeChallenge() { C.result = null; drawChallengeSetup(); },
+
+  /* Tiến độ */
+  setGoal(el) { state.goalMin = parseInt(el.dataset.min, 10); save(); renderProgress(); },
+  setScale(el) { state.scale = el.dataset.scale; applyScale(); save(); renderProgress(); },
+  askReset() {
+    $("#resetBox").innerHTML = `<div class="notice notice-bad">${ic("warn")}<div><b>Xóa toàn bộ tiến độ?</b>Việc này không thể hoàn tác.</div></div>
+      <div class="two" style="margin-top:10px">
+        <button class="btn btn-ghost" data-act="cancelReset">Giữ lại</button>
+        <button class="btn btn-danger" data-act="confirmReset">Xóa</button>
+      </div>`;
+  },
+  cancelReset() { renderProgress(); },
+  confirmReset() {
+    const keep = { scale: state.scale };
+    state = Object.assign(defaultState(), keep);
+    save();
+    toast("Đã xóa tiến độ. Bắt đầu lại nào!");
+    renderProgress();
+  }
+};
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-act]");
+  if (!el || el.disabled) return;
+  // Nút bên trong thẻ từ vựng không làm lật thẻ, vì closest() đã chọn đúng nút trong cùng
+  const fn = Actions[el.dataset.act];
+  if (fn) fn(el);
+});
+
+function applyScale() { document.documentElement.dataset.scale = state.scale; }
+
+/* ============================================================
+   PHẦN 7: ĐIỀU HƯỚNG THEO ĐỊA CHỈ (#/...)
+   Trang được tải lại vẫn mở đúng màn hình, nút Back của điện thoại vẫn hoạt động.
+   ============================================================ */
+const NAV_ITEMS = [
+  { key: "home", href: "#/home", label: "Trang chủ", icon: "home" },
+  { key: "topics", href: "#/topics", label: "Chủ đề", icon: "book" },
+  { key: "vocab", href: "#/vocab", label: "Từ vựng", icon: "cards" },
+  { key: "progress", href: "#/progress", label: "Tiến độ", icon: "chart" }
+];
+function renderNav(active) {
+  $("#navLinks").innerHTML = NAV_ITEMS.map((n) =>
+    `<a class="link" href="${n.href}" ${n.key === active ? 'aria-current="page"' : ""}>${ic(n.icon)}${n.label}</a>`).join("");
+}
+let currentRoute = { name: "", learning: false };
+function route() {
+  const [name = "home", a, b] = location.hash.replace(/^#\/?/, "").split("/").map((x) => decodeURIComponent(x));
+  const leavingPractice = currentRoute.name === "practice" && name !== "practice";
+  closeSheet();
+  cleanupPractice();
+  cleanupChallenge();
+  V = null;
+  if (currentRoute.name === "challenge" && name !== "challenge") C.result = null;
+  if (leavingPractice && practiceSessionReps >= 3) {
+    toast(`Buổi luyện tốt lắm! Bạn vừa nói thêm ${practiceSessionReps} lần.`);
+  }
+  if (leavingPractice) practiceSessionReps = 0;
+
+  const vocabSession = name === "vocab" && a;
+  const focus = name === "practice" || vocabSession || name === "challenge";
+  if (focus) document.body.dataset.focus = "1"; else delete document.body.dataset.focus;
+  const sameScreen = currentRoute.name === name && name === "practice";
+  currentRoute = { name, learning: name === "practice" || vocabSession || name === "challenge" };
+  renderNav(name === "vocab" ? "vocab" : name);
+
+  switch (name) {
+    case "": case "home": renderNav("home"); renderHome(); break;
+    case "topics": renderTopics(); break;
+    case "practice": renderPractice(a, b); break;
+    case "vocab": a ? renderVocabSession(a) : renderVocabHome(); break;
+    case "progress": renderProgress(); break;
+    case "challenge": renderChallenge(); break;
+    default: view.innerHTML = notFound();
+  }
+  if (!sameScreen) { window.scrollTo(0, 0); view.focus({ preventScroll: true }); }
+}
+window.addEventListener("hashchange", route);
+
+/* ============================================================
+   PHẦN 8: ĐẾM THỜI GIAN HỌC VÀ LƯU KHI RỜI TRANG
+   Chỉ đếm khi đang ở màn hình học, trang đang hiển thị và có thao tác gần đây.
+   ============================================================ */
+let lastActive = Date.now();
+const markActive = () => { lastActive = Date.now(); };
+["pointerdown", "keydown"].forEach((ev) => document.addEventListener(ev, markActive, { passive: true }));
+let unsavedSeconds = 0;
+setInterval(() => {
+  if (!currentRoute.learning || document.hidden || Date.now() - lastActive > 90000) return;
+  const day = todayRecord();
+  const goalSec = state.goalMin * 60;
+  const before = day.seconds;
+  day.seconds++;
+  if (before < goalSec && day.seconds >= goalSec) {
+    toast(`🎯 Bạn đã đạt mục tiêu ${state.goalMin} phút hôm nay. Giỏi lắm!`);
+    save();
+  }
+  if (++unsavedSeconds >= 10) { unsavedSeconds = 0; save(); }
+}, 1000);
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) return;
+  save();
+  // Trả micro và dừng âm thanh khi người dùng chuyển sang ứng dụng khác
+  if (P) {
+    if (P.mic === "recording") stopMic();
+    Speech.cancel();
+    stopPlayback();
+  }
+});
+window.addEventListener("pagehide", () => { save(); Mic.stop(true); Speech.cancel(); });
+
+/* ============================================================
+   PHẦN 9: KHỞI ĐỘNG ỨNG DỤNG
+   ============================================================ */
+applyScale();
+Speech.init();
+route();
+</script>
+</body>
+</html>
