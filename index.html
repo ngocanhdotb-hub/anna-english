@@ -58,7 +58,8 @@ svg.ic { width: 1.4em; height: 1.4em; flex: none; fill: none; stroke: currentCol
 
 /* Khung ứng dụng */
 #view { padding: 16px 16px calc(var(--nav-h) + 28px + env(safe-area-inset-bottom)); max-width: 640px; margin: 0 auto; outline: none; }
-.screen { animation: fadeUp .22s ease-out; }
+.screen { animation: fadeIn .2s ease-out; }
+@keyframes fadeIn { from { opacity: 0; } }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } }
 
 /* Thanh điều hướng: dưới cùng trên điện thoại, cột trái trên desktop */
