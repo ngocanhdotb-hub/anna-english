@@ -2610,6 +2610,14 @@ function renderTrain() {
 
 /* --- Bài kiểm tra --- */
 let Q = null;
+function shuffled(list) {
+  const a = list.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 function renderQuiz(scope, ref) {
   const isTopic = scope === "topic";
   const t = isTopic ? topicById(ref) : null;
@@ -2621,6 +2629,8 @@ function renderQuiz(scope, ref) {
     return rows(query);
   }, (questions) => {
     if (!questions.length) { view.innerHTML = `<div class="card empty">${esc(ERROR_TEXT.NO_QUESTIONS)}</div>`; return; }
+    // Mỗi lần vào bài, thứ tự câu hỏi và đáp án đều khác để không làm theo trí nhớ vị trí
+    questions = shuffled(questions).map((q) => ({ ...q, options: shuffled(q.options) }));
     Q = { isTopic, t, lv, questions, pos: 0, answers: {}, title: isTopic ? t.title_vi : lv.code, back: isTopic ? `#/topic/${t.id}` : `#/level/${lv.id}` };
     drawQuiz();
   });
