@@ -1,6 +1,7 @@
 // Tạo supabase/seed.sql từ content.mjs. Chạy lại an toàn: chỉ thêm hoặc cập nhật, không đụng tiến độ người học.
 import { writeFileSync } from 'fs';
 import { LEVELS, TOPICS } from './content.mjs';
+import { DIALOGUES } from './dialogues.mjs';
 
 const q = (v) => (v === null || v === undefined ? 'null' : `'${String(v).replace(/'/g, "''")}'`);
 const arr = (a) => `array[${a.map(q).join(',')}]::text[]`;
@@ -60,6 +61,11 @@ for (const x of quiz) {
   out.push(`insert into quiz_questions values (${q(x.id)},${q(x.topic)},${x.level ?? 'null'},${x.position},${q(x.kind)},${q(x.prompt)},${q(x.audio)},${q(JSON.stringify(x.opts))}::jsonb) on conflict (id) do update set prompt=excluded.prompt,audio_text=excluded.audio_text,options=excluded.options;`);
   out.push(`insert into quiz_answers values (${q(x.id)},${q(x.answer)}) on conflict (question_id) do update set answer=excluded.answer;`);
 }
+for (const d of DIALOGUES) {
+  const id = `${d.topic}-d1`;
+  out.push(`insert into dialogues values (${q(id)},${q(d.topic)},${q(d.title)},${q(d.scene)}) on conflict (id) do update set title_vi=excluded.title_vi,scene_vi=excluded.scene_vi;`);
+  d.lines.forEach((l, i) => out.push(`insert into dialogue_lines values (${q(`${id}-${i}`)},${q(id)},${i},${q(l.speaker)},${q(l.en)},${q(l.vi)},${arr(l.accepts)},${arr(keywordsOf(l.en))}) on conflict (id) do update set speaker=excluded.speaker,en=excluded.en,vi=excluded.vi,accepts=excluded.accepts,keywords=excluded.keywords;`));
+}
 // Tài khoản đã có khi seed lần đầu cũng được mở level 1
 out.push('insert into level_progress (user_id, level_id) select id, 1 from profiles on conflict do nothing;');
 out.push('commit;');
@@ -73,6 +79,12 @@ for (const t of TOPICS) {
   const text = t.sentences.map((s) => s.en.toLowerCase()).join(' ');
   for (const w of t.words) if (!new RegExp(`\\b${w.word.toLowerCase()}\\b`).test(text)) problems.push(`${t.id}: từ "${w.word}" không có trong câu mẫu`);
 }
+for (const d of DIALOGUES) {
+  if (!TOPICS.some((t) => t.id === d.topic)) problems.push(`hội thoại sai chủ đề: ${d.topic}`);
+  if (d.lines.length < 4 || d.lines.at(-1).speaker !== 'user') problems.push(`hội thoại chưa đạt: ${d.topic}`);
+  for (const l of d.lines) if (l.en.split(/\s+/).length > 8) problems.push(`quá 8 từ: ${l.en}`);
+}
+if (DIALOGUES.length !== TOPICS.length) problems.push(`thiếu hội thoại: ${DIALOGUES.length}/${TOPICS.length}`);
 const seen = new Map();
 for (const t of TOPICS) for (const s of t.sentences) { if (seen.has(s.en)) problems.push(`trùng câu: ${s.en} (${seen.get(s.en)}, ${t.id})`); seen.set(s.en, t.id); }
 for (const x of quiz) if (new Set(x.opts).size < 4 || !x.opts.includes(x.answer)) problems.push(`câu hỏi lỗi ${x.id}: ${x.opts.length} lựa chọn`);

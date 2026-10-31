@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#FFF8F1">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Anna English">
 <meta name="description" content="Anna English – Luyện nói tiếng Anh giao tiếp mỗi ngày cho người Việt mới bắt đầu.">
 <title>Anna English – Luyện nói tiếng Anh mỗi ngày</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23C2412D'/%3E%3Ctext x='16' y='23' font-family='Arial' font-weight='700' font-size='20' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
@@ -306,6 +311,17 @@ input:not([type=checkbox]) { font: inherit; width: 100%; min-height: 48px; paddi
 #nav a.link { font-size: .75rem; }
 @media (min-width: 960px) { #nav .links { grid-template-columns: 1fr; } #nav a.link { font-size: 1rem; } }
 
+/* --- Tô màu từ, hội thoại, ôn theo lịch --- */
+.w-ok { color: var(--good); }
+.w-bad { color: var(--danger); font-weight: 800; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.chat { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.bubble { max-width: 86%; justify-self: start; padding: 10px 14px; border-radius: 16px 16px 16px 4px; background: var(--surface); box-shadow: var(--shadow); animation: fadeIn .2s ease-out; }
+.bubble.mine { justify-self: end; border-radius: 16px 16px 4px 16px; background: var(--primary-soft); }
+.b-en { font-weight: 700; font-size: 1.125rem; line-height: 1.3; overflow-wrap: anywhere; }
+.b-vi { font-size: .875rem; color: var(--muted); }
+.shield { display: block; font-size: .75rem; font-weight: 600; margin-top: 1px; }
+select { font: inherit; width: 100%; min-height: 48px; padding: 8px 12px; border-radius: 12px; border: 1.5px solid #D9C8B6; background: var(--surface); color: var(--ink); }
+
 /* --- Flashcard --- */
 .fc-scene { perspective: 1200px; }
 .fc { display: grid; width: 100%; transform-style: preserve-3d; transition: transform .5s cubic-bezier(.3, .7, .3, 1); cursor: pointer; animation: fadeUp .25s ease-out; }
@@ -321,6 +337,10 @@ input:not([type=checkbox]) { font: inherit; width: 100%; min-height: 48px; paddi
 .fc .mean { font-size: 1.75rem; font-weight: 800; color: var(--primary-dark); }
 .fc .ex { font-size: 1.125rem; font-weight: 600; }
 .fc-pad { padding-bottom: 104px; display: grid; gap: 12px; }
+.review-q { display: grid; gap: 4px; padding-top: 10px; border-top: 1px solid var(--line); }
+.review-q:first-of-type { border-top: 0; padding-top: 0; }
+.review-q svg.ic { width: 1em; height: 1em; vertical-align: -1px; }
+.review-q .btn { justify-self: start; min-height: 44px; padding: 6px 14px; }
 .dock-simple .two .btn { min-height: 60px; }
 
 /* --- Thử thách --- */
@@ -431,6 +451,7 @@ input:not([type=checkbox]) { font: inherit; width: 100%; min-height: 48px; paddi
    ============================================================ */
 const SUPABASE_URL = "https://fpwsxybxwomgdjlkwkpj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_RP-CYoUBywf59qHv-_5_uA_J4XKxxo0";
+const VAPID_PUBLIC_KEY = "BOOAb2t5EAENdkj0xqdKBTwU_E-CDCI4LGYOrnPgrrULOZrgqbWit1M97-3gd5ux_CnEr1Fxqu6znrWtQQf65xE"; // khóa công khai để nhận thông báo nhắc học
 const LOGIN_DOMAIN = "anna-english.invalid"; // Supabase cần email nên tạo địa chỉ nội bộ từ tên đăng nhập, không gửi thư
 const PREF_KEY = "annaEnglish.prefs";
 const OUTBOX_KEY = "annaEnglish.outbox";
@@ -456,6 +477,7 @@ let TOPICS = [];
 let levelRows = {};     // id level -> dòng level_progress (không có nghĩa là đang khóa)
 let topicRows = {};     // id chủ đề -> dòng topic_results
 let achievementsAll = [];
+let dialogueDone = {};  // id hội thoại -> số lần đã hoàn thành
 const state = { sp: {}, words: {}, speed: "normal", showVi: true, seenGuide: false, scale: "md" };
 
 function loadPrefs() {
@@ -482,6 +504,9 @@ const doneInTopic = (t) => t.sentences.filter((_, i) => isDone(t.id, i)).length;
 const isKnown = (tid, i) => (state.words[sKey(tid, i)] || {}).status === "known";
 const knownInTopic = (t) => t.words.filter((_, i) => isKnown(t.id, i)).length;
 const topicPercent = (t) => (t.sentences.length ? Math.round(doneInTopic(t) / t.sentences.length * 100) : 0);
+/* Câu đã học đến hạn ôn hôm nay */
+const dueList = (t) => t.sentences.map((_, i) => i).filter((i) => { const r = spOf(t.id, i); return r && r.completedAt && r.nextReview && r.nextReview <= dateKey(); });
+const dueCount = () => openTopics().reduce((n, t) => n + dueList(t).length, 0);
 const levelUnlocked = (id) => !!levelRows[id];
 const topicUnlocked = (t) => levelUnlocked(t.level_id);
 const topicComplete = (t) => !!(topicRows[t.id] && topicRows[t.id].completed_at);
@@ -586,28 +611,36 @@ const Outbox = {
 window.addEventListener("online", () => Outbox.flush());
 
 async function loadContent() {
-  const [levels, topics, sentences, vocab, ach] = await Promise.all([
+  const [levels, topics, sentences, vocab, ach, dialogues, lines] = await Promise.all([
     rows(sb.from("levels").select("*").order("id")),
     rows(sb.from("topics").select("*").order("position")),
     rows(sb.from("sentences").select("*, lessons!inner(topic_id)").order("position")),
     rows(sb.from("vocabulary").select("*").order("position")),
-    rows(sb.from("achievements").select("*"))
+    rows(sb.from("achievements").select("*")),
+    rows(sb.from("dialogues").select("*")),
+    rows(sb.from("dialogue_lines").select("*").order("position"))
   ]);
   LEVELS = levels;
   achievementsAll = ach;
   TOPICS = topics.map((t) => ({
     ...t,
     sentences: sentences.filter((s) => s.lessons.topic_id === t.id),
-    words: vocab.filter((v) => v.topic_id === t.id).map((v) => ({ ...v, ex: v.example, exVi: v.example_vi }))
+    words: vocab.filter((v) => v.topic_id === t.id).map((v) => ({ ...v, ex: v.example, exVi: v.example_vi })),
+    dialogue: (() => {
+      const d = dialogues.find((x) => x.topic_id === t.id);
+      return d ? { ...d, lines: lines.filter((l) => l.dialogue_id === d.id) } : null;
+    })()
   }));
 }
 async function loadProgress() {
-  const [prog, words, tr, lv] = await Promise.all([
+  const [prog, words, tr, lv, dp] = await Promise.all([
     rows(sb.from("user_progress").select("*").eq("user_id", me.id)),
     rows(sb.from("user_vocabulary").select("*").eq("user_id", me.id)),
     rows(sb.from("topic_results").select("*").eq("user_id", me.id)),
-    rows(sb.from("level_progress").select("*").eq("user_id", me.id))
+    rows(sb.from("level_progress").select("*").eq("user_id", me.id)),
+    rows(sb.from("dialogue_progress").select("*").eq("user_id", me.id))
   ]);
+  dialogueDone = Object.fromEntries(dp.map((r) => [r.dialogue_id, r.times]));
   state.sp = {}; state.words = {};
   const sIndex = {}, wIndex = {};
   TOPICS.forEach((t) => {
@@ -617,7 +650,7 @@ async function loadProgress() {
   prog.forEach((r) => {
     if (sIndex[r.sentence_id]) state.sp[sIndex[r.sentence_id]] = {
       status: r.status, attempts: r.attempts, successes: r.successes, firstResult: r.first_result,
-      completedAt: r.completed_at, lastHeard: r.last_heard, review: r.needs_review, seconds: 0
+      completedAt: r.completed_at, lastHeard: r.last_heard, review: r.needs_review, seconds: 0, nextReview: r.next_review_on
     };
   });
   words.forEach((r) => {
@@ -1172,7 +1205,7 @@ function renderPractice(topicId, rawIndex, mode) {
     meter: "quiet", goodUntil: 0, loudSeen: false, audio: null, playing: false
   };
   if (P.rec.status === "new") P.rec.status = "doing";
-  lessonSeen.add(index);
+  lessonSeen.add(sKey(t.id, index));
   const long = P.s.en.length > 22;
   view.innerHTML = `<div class="screen">
     <header class="pr-head">
@@ -1236,6 +1269,12 @@ function syncLesson() {
   $("#status").className = `status ${ph.cls}`;
   $("#status").innerHTML = `${ic(ph.icon)}<span>${esc(P.nudge && (P.phase === "turn" || P.phase === "listening") ? "Bạn hãy thử nói theo câu mẫu nhé" : ph.label)}</span>`;
   syncLive();
+  // Tạm dừng thì mở khu vực tự ghi âm; điện thoại không ghi được trong lúc nhận diện nên dùng cách này
+  const panel = $("#speakPanel");
+  if (panel && !P.manual) {
+    panel.hidden = P.phase !== "paused";
+    if (P.phase === "paused") syncSpeak();
+  }
   syncDock();
 }
 function syncLive() {
@@ -1250,11 +1289,9 @@ function syncLive() {
     html += `<p class="interim" id="interim">${esc(P.interim)}</p>`;
   }
   if (P.note) html += `<div class="notice notice-warn">${ic("warn")}<div>${esc(P.note)}</div></div>`;
-  if (P.feedback && P.feedback.level === "wrong") {
-    html += `<div class="card compare"><div><b>Mình nghe được</b><span lang="en">${esc(P.feedback.heard)}</span></div><div><b>Câu chuẩn</b><span lang="en">${esc(P.s.en)}</span></div></div>`;
-  } else if (P.feedback && P.feedback.level === "near") {
-    html += `<div class="card compare"><div><b>Mình nghe được</b><span lang="en">${esc(P.feedback.heard)}</span></div></div>`;
-  }
+  if (P.feedback) html += compareHtml(P.s.en, P.feedback.heard, !!P.voiceUrl);
+  if (P.phase === "paused" && P.voiceUrl && !P.feedback) html += `<button class="btn btn-soft btn-block" data-act="playVoice">${ic("play")}Nghe lại giọng bạn</button>`;
+  if (P.phase === "paused") html += `<p class="small muted" style="text-align:center">Bạn có thể ghi âm thử bên dưới để tự nghe giọng mình.</p>`;
   if (P.phase === "correct" || P.phase === "moving") {
     html += `<div class="card compare"><div><b>Câu chuẩn</b><span lang="en">${esc(P.s.en)}</span></div><div><b>Nghĩa</b><span>${esc(P.s.vi)}</span></div></div>`;
   }
@@ -1312,7 +1349,8 @@ function interrupt() {
   P.timers.forEach(clearTimeout);
   P.timers = [];
   Recog.stop();
-  if (P.mic !== "recording") Mic.stop(true);
+  if (P.voiceAudio) { P.voiceAudio.pause(); P.voiceAudio = null; }
+  if (P.mic !== "recording") Mic.stop(!P.keepVoice);
   P.meterOn = false;
   Speech.cancel();
 }
@@ -1351,6 +1389,7 @@ function showError(code) {
 /* Thao tác duy nhất người học cần làm: nhấn Nghe mẫu hoặc Tiếp tục */
 async function startLesson() {
   if (!P) return;
+  if (P.mic === "recording") stopMic();
   if (P.solved) { advance(); return; }
   autoRun = true;
   interrupt();
@@ -1446,10 +1485,16 @@ function goListen() {
 function startWave() {
   const owner = P;
   Mic.start({
-    meterOnly: true,
+    meterOnly: !Mic.canRecord(),
     onLive() {},
     onLevel(level) { if (P === owner) drawWave(level); },
-    onDone() {},
+    onDone({ url }) {
+      if (P !== owner) { if (url) URL.revokeObjectURL(url); return; }
+      if (!url) return;
+      if (P.voiceUrl) URL.revokeObjectURL(P.voiceUrl);
+      P.voiceUrl = url;
+      syncLive();
+    },
     onError() {}
   });
 }
@@ -1477,7 +1522,9 @@ function judge(alts) {
     const g = gradeSpeech(text, P.s);
     if (!best || rank[g.level] > rank[best.level] || (rank[g.level] === rank[best.level] && g.score > best.score)) best = { ...g, heard: text.trim() };
   });
+  P.keepVoice = true;   // giữ lại bản ghi của lượt này để người học nghe lại
   interrupt();
+  P.keepVoice = false;
   if (!best || !best.heard) { P.note = "Mình chưa nghe rõ, hãy thử lại"; later(goListen, 900); syncLive(); return; }
   markActive();
   P.silentRounds = 0;
@@ -1496,6 +1543,7 @@ function judge(alts) {
     if (!rec.completedAt) rec.completedAt = Date.now();
     rec.status = "done";
     rec.review = P.sessionAttempts > 1;
+    rec.nextReview = dateKey(daysAgo(-1)); // máy chủ tính ngày chính xác, lần tải sau sẽ cập nhật
     P.feedback = null;
     confetti();
     vibrate(20);
@@ -1506,12 +1554,13 @@ function judge(alts) {
   rec.review = true;
   P.feedback = best;
   setPhase(best.level);
-  later(goListen, best.level === "near" ? 1600 : 2400);
+  later(goListen, best.level === "near" ? 2400 : 3200);
 }
 /* Câu tiếp theo tùy lượt học; không còn câu thì sang màn hình chúc mừng */
 function nextIndex() {
   const t = P.t, n = t.sentences.length;
-  if (P.mode === "review") return reviewList(t).find((i) => !lessonSeen.has(i));
+  if (P.mode === "review") return reviewList(t).find((i) => !lessonSeen.has(sKey(t.id, i)));
+  if (P.mode === "due") return dueList(t).find((i) => !lessonSeen.has(sKey(t.id, i)));
   if (P.mode === "all") return P.index + 1 < n ? P.index + 1 : undefined;
   for (let k = 1; k <= n; k++) {
     const i = (P.index + k) % n;
@@ -1522,6 +1571,15 @@ function nextIndex() {
 function advance() {
   if (!P) return;
   const i = nextIndex();
+  if (i === undefined && P.mode === "due") {
+    // Hết câu đến hạn của chủ đề này thì chuyển sang chủ đề khác, hết hẳn thì về trang chủ
+    const other = openTopics().find((x) => dueList(x).some((k) => !lessonSeen.has(sKey(x.id, k))));
+    if (other) { location.replace(`#/practice/${other.id}/${dueList(other).find((k) => !lessonSeen.has(sKey(other.id, k)))}/due`); return; }
+    autoRun = false;
+    toast("Bạn đã ôn xong phần hôm nay. Giỏi lắm!");
+    location.hash = "#/home";
+    return;
+  }
   if (i === undefined) { autoRun = false; location.hash = `#/topic/${P.t.id}`; return; }
   gotoSentence(i);
 }
@@ -1612,6 +1670,7 @@ function manualDone() {
   if (!rec.completedAt) rec.completedAt = Date.now();
   rec.status = "done";
   rec.review = false;
+  rec.nextReview = dateKey(daysAgo(-1));
   practiceSessionReps++;
   // Chế độ tự đánh giá: người học tự xác nhận, ứng dụng không kiểm tra nội dung câu nói
   Outbox.push("record_attempt", { p_attempt_id: newId(), p_sentence: P.s.id, p_heard: "", p_result: "manual", p_score: null, p_session_attempts: 1 });
@@ -1800,6 +1859,8 @@ function cleanupPractice() {
   Speech.cancel();
   stopPlayback();
   clearRecording();
+  if (P.voiceAudio) P.voiceAudio.pause();
+  if (P.voiceUrl) URL.revokeObjectURL(P.voiceUrl);
   P = null;
 }
 
@@ -1940,6 +2001,306 @@ function rateWord(known) {
   drawVocab();
 }
 
+/* --- So sánh từng từ để tô màu từ cần sửa --- */
+function wordTokens(text) {
+  return String(text).trim().split(/\s+/).filter(Boolean).map((raw) => ({ raw, parts: normalizeSpeech(raw) }));
+}
+/* Căn hai câu theo từ (dãy con chung dài nhất); từ gần đúng chính tả vẫn tính là khớp */
+function diffSentence(targetText, heardText) {
+  const target = wordTokens(targetText), heard = wordTokens(heardText);
+  const a = target.flatMap((t, i) => t.parts.map((w) => ({ w, owner: i })));
+  const b = heard.flatMap((t, i) => t.parts.map((w) => ({ w, owner: i })));
+  const same = (x, y) => x === y || (Math.max(x.length, y.length) > 3 && wordCost(x, y) <= 0.25);
+  const dp = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) {
+    for (let j = b.length - 1; j >= 0; j--) {
+      dp[i][j] = same(a[i].w, b[j].w) ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+  const aOk = new Set(), bOk = new Set();
+  for (let i = 0, j = 0; i < a.length && j < b.length;) {
+    if (same(a[i].w, b[j].w)) { aOk.add(i); bOk.add(j); i++; j++; }
+    else if (dp[i + 1][j] >= dp[i][j + 1]) i++;
+    else j++;
+  }
+  const mark = (tokens, flat, ok) => tokens.map((t, idx) => {
+    const own = flat.map((x, k) => (x.owner === idx ? k : -1)).filter((k) => k >= 0);
+    return { raw: t.raw, ok: own.length > 0 ? own.every((k) => ok.has(k)) : true };
+  });
+  return { target: mark(target, a, aOk), heard: mark(heard, b, bOk) };
+}
+const wordsHtml = (list) => list.map((w) => `<span class="${w.ok ? "w-ok" : "w-bad"}">${esc(w.raw)}</span>`).join(" ");
+/* Khối đối chiếu dùng cho luyện câu và hội thoại */
+function compareHtml(targetText, heardText, withVoice) {
+  const d = diffSentence(targetText, heardText);
+  return `<div class="card compare">
+    <div><b>Mình nghe được</b><span lang="en">${wordsHtml(d.heard)}</span></div>
+    <div><b>Câu chuẩn</b><span lang="en">${wordsHtml(d.target)}</span></div>
+    <p class="small muted">Từ gạch chân màu đỏ là từ cần nói lại.</p>
+    ${withVoice ? `<button class="btn btn-soft btn-block" data-act="playVoice">${ic("play")}Nghe lại giọng bạn</button>` : ""}
+  </div>`;
+}
+/* Nghe lại giọng vừa nói; nghe xong app tự bật micro lại */
+function playVoice() {
+  if (!P || !P.voiceUrl) return;
+  interrupt();
+  const owner = P;
+  const audio = new Audio(P.voiceUrl);
+  const finish = () => {
+    if (P !== owner || P.voiceAudio !== audio) return;
+    P.voiceAudio = null;
+    if (P.phase !== "paused" && !P.solved) goListen();
+  };
+  P.voiceAudio = audio;
+  audio.onended = finish;
+  audio.onerror = () => { finish(); toast("Không phát lại được bản ghi."); };
+  const started = audio.play();
+  if (started && started.catch) started.catch(finish);
+}
+
+/* --- 5.5 Hội thoại đóng vai --- */
+let D = null;
+function renderDialog(topicId) {
+  const t = topicById(topicId);
+  if (!t || !t.dialogue) { view.innerHTML = notFound(); return; }
+  if (!topicUnlocked(t)) { location.replace(`#/level/${t.level_id}`); return; }
+  D = { t, d: t.dialogue, pos: -1, phase: "ready", run: 0, timers: [], hideEn: false, feedback: null, interim: "", silent: 0, skipped: 0, tries: 0, note: null, errCode: null };
+  drawDialog();
+}
+function dLater(fn, ms) {
+  const owner = D, run = D.run;
+  D.timers.push(setTimeout(() => { if (D === owner && D.run === run) fn(); }, ms));
+}
+function dStop() {
+  if (!D) return;
+  D.run++;
+  D.timers.forEach(clearTimeout);
+  D.timers = [];
+  Recog.stop();
+  Speech.cancel();
+}
+function cleanupDialog() { if (D) { dStop(); D = null; } }
+const D_STATUS = {
+  ready: ["Sẵn sàng đóng vai", "play", "st-idle"], perm: ["Hãy chọn Cho phép để bật micro", "mic", "st-turn"],
+  app: ["Đang nghe đối phương nói", "sound", "st-model"], turn: ["Đến lượt bạn nói", "mic", "st-turn"],
+  listening: ["Đang nghe bạn nói", "mic", "st-listen"], near: ["Gần đúng rồi! Hãy thử lại nhé", "smile", "st-near"],
+  wrong: ["Chưa chính xác, bạn hãy nói lại nhé", "redo", "st-wrong"], good: ["Chính xác!", "check", "st-good"],
+  paused: ["Đã tạm dừng", "pause", "st-pause"], held: ["Micro đang nghỉ. Nhấn Nói lại khi bạn sẵn sàng", "pause", "st-pause"],
+  error: ["Chưa luyện nói được", "warn", "st-bad"], manual: ["Đọc to câu của bạn rồi nhấn nút bên dưới", "mic", "st-idle"]
+};
+function drawDialog() {
+  const { t, d } = D;
+  const shown = d.lines.slice(0, D.pos + 1);
+  const cur = d.lines[D.pos];
+  const userTurn = cur && cur.speaker === "user";
+  const [label, icon, cls] = D_STATUS[D.phase];
+  const bubble = (l, i) => {
+    const mine = l.speaker === "user";
+    const active = i === D.pos && mine && D.phase !== "good";
+    const hidden = active && D.hideEn;
+    return `<div class="bubble ${mine ? "mine" : ""}">
+      ${hidden ? `<p class="b-en muted">(Nhớ lại câu tiếng Anh)</p>` : `<p class="b-en" lang="en">${esc(l.en)}</p>`}
+      <p class="b-vi">${esc(l.vi)}</p></div>`;
+  };
+  const tool = (act, ico, text, off) => `<button class="tool" data-act="${act}" ${off ? "disabled" : ""}>${ic(ico)}${text}</button>`;
+  let dock;
+  if (D.phase === "ready") dock = `<button class="btn btn-primary btn-lg btn-block" data-act="dStart">${ic("play")}Bắt đầu hội thoại</button>`;
+  else if (D.phase === "paused") dock = `<button class="btn btn-primary btn-lg btn-block" data-act="dResume">${ic("play")}Tiếp tục</button>`;
+  else if (D.phase === "manual") dock = `<div class="two"><button class="btn btn-soft" data-act="dReplay" style="min-height:56px">${ic("play")}Nghe lại</button><button class="btn btn-primary" data-act="dManual" style="min-height:56px">${ic("check")}Mình đã nói xong</button></div>`;
+  else if (D.phase === "error") {
+    dock = `<div class="two"><button class="btn btn-ghost" data-act="dUseManual" style="min-height:56px">Tự đánh giá</button><button class="btn btn-primary" data-act="dRetry" style="min-height:56px">${ic("redo")}Thử lại</button></div>`;
+  } else {
+    dock = `<div class="tools">${tool("dReplay", "play", "Nghe lại", !shown.length)}${tool("dListen", "mic", "Nói lại", !userTurn)}${tool("dPause", "pause", "Tạm dừng", D.phase === "perm")}${tool("dSkip", "skip", "Bỏ qua", !userTurn)}</div>`;
+  }
+  const micOn = D.phase === "turn" || D.phase === "listening";
+  const err = D.phase === "error" ? (RECOG_ERRORS[D.errCode] || RECOG_ERRORS.unknown) : null;
+  view.innerHTML = `<div class="screen fc-wrap">
+    <header class="pr-head">
+      <a class="icon-btn" href="#/topic/${t.id}" aria-label="Thoát hội thoại">${ic("x")}</a>
+      <div class="mid"><p class="tn">${t.icon} ${esc(d.title_vi)}</p><b>Lượt ${Math.max(D.pos + 1, 0)}/${d.lines.length}</b></div>
+      <button class="icon-btn" data-act="dToggleEn" aria-label="Bật hoặc tắt chế độ nói không nhìn câu" aria-pressed="${D.hideEn}">${ic(D.hideEn ? "eye" : "eyeOff")}</button>
+    </header>
+    <div style="margin-bottom:10px">${bar(Math.round(Math.max(D.pos + 1, 0) / d.lines.length * 100))}</div>
+    <div class="stack" style="gap:10px;padding-bottom:110px">
+      <p class="small muted" style="text-align:center">${esc(d.scene_vi)}</p>
+      <div class="chat">${shown.map(bubble).join("")}</div>
+      <div class="status ${cls}" role="status" aria-live="polite">${ic(icon)}<span>${esc(D.nudge && micOn ? "Bạn hãy thử nói theo câu mẫu nhé" : label)}</span></div>
+      ${micOn ? `<div class="fake-wave ${D.phase === "listening" ? "on" : ""}" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><p class="interim" id="dInterim">${esc(D.interim)}</p>` : ""}
+      ${D.note ? `<div class="notice notice-warn">${ic("warn")}<div>${esc(D.note)}</div></div>` : ""}
+      ${D.feedback && userTurn ? compareHtml(cur.en, D.feedback, false) : ""}
+      ${err ? `<div class="notice notice-bad">${ic("micOff")}<div><b>${esc(err.title)}</b>${esc(err.text)}</div></div>` : ""}
+    </div>
+  </div>
+  <div class="dock lesson-dock"><div class="dock-in">${dock}</div></div>`;
+  const chat = view.querySelector(".chat .bubble:last-child");
+  if (chat) chat.scrollIntoView({ block: "nearest" });
+}
+function dSetPhase(phase) { if (D) { D.phase = phase; drawDialog(); } }
+async function dStart() {
+  if (!D) return;
+  dStop();
+  if (!Recog.supported) { dNext(); return; }
+  const owner = D, run = D.run;
+  if (!micReady) dSetPhase("perm");
+  try { await ensureMic(); }
+  catch (code) { if (D === owner && D.run === run) { D.errCode = code; dSetPhase("error"); } return; }
+  if (D === owner && D.run === run) dNext();
+}
+/* Sang lượt kế tiếp: đối phương thì phát giọng rồi tự đi tiếp, người học thì bật micro */
+function dNext() {
+  if (!D) return;
+  dStop();
+  D.pos++;
+  D.feedback = null; D.interim = ""; D.note = null; D.silent = 0; D.tries = 0;
+  const line = D.d.lines[D.pos];
+  if (!line) { dFinish(); return; }
+  if (line.speaker === "app") dSpeakApp(line);
+  else dUserTurn(line);
+}
+function dSpeakApp(line) {
+  dSetPhase("app");
+  const owner = D, run = D.run;
+  Speech.speak(line.en, SPEEDS[state.speed].rate).then((r) => {
+    if (D !== owner || D.run !== run || r === "canceled") return;
+    if (r === "error") { D.note = SPEECH_FAILED; }
+    dLater(dNext, r === "ended" ? 300 : 1800);
+  });
+}
+function dUserTurn() {
+  if (!Recog.supported || D.useManual) { dSetPhase("manual"); return; }
+  dListen();
+}
+function dListen() {
+  if (!D) return;
+  dStop();
+  markActive();
+  D.interim = ""; D.nudge = false;
+  dSetPhase("turn");
+  dLater(() => { D.nudge = true; drawDialog(); }, SILENCE_NUDGE_MS);
+  const owner = D, run = D.run, line = D.d.lines[D.pos];
+  const stale = () => D !== owner || D.run !== run;
+  let endReason = null;
+  Recog.start({
+    onSpeech() { if (stale()) return; markActive(); D.nudge = false; if (D.phase === "turn") dSetPhase("listening"); },
+    onInterim(text) {
+      if (stale()) return;
+      D.interim = text; D.feedback = null; D.nudge = false;
+      if (D.phase !== "listening") dSetPhase("listening");
+      else { const el = $("#dInterim"); if (el) el.textContent = text; }
+    },
+    onFinal(alts) { if (!stale()) dJudge(alts, line); },
+    onError(code) {
+      if (stale()) return;
+      if (code === "no-speech") { endReason = "silent"; return; }
+      const map = { "not-allowed": "denied", "service-not-allowed": "service", "audio-capture": "nomic", network: "network", "language-not-supported": "service", "start-failed": "unknown" };
+      if (code === "not-allowed") micReady = false;
+      dStop();
+      D.errCode = map[code] || "unknown";
+      dSetPhase("error");
+    },
+    onEnd() {
+      if (stale()) return;
+      if (D.interim) { D.note = "Mình chưa nghe rõ, hãy thử lại"; dLater(dListen, 900); drawDialog(); return; }
+      D.silent++;
+      if (D.silent >= MAX_SILENT_ROUNDS) { dStop(); dSetPhase("held"); return; }
+      dListen();
+    }
+  });
+}
+function dJudge(alts, line) {
+  const rank = { wrong: 0, near: 1, correct: 2 };
+  let best = null;
+  alts.forEach((text) => {
+    const g = gradeSpeech(text, line);
+    if (!best || rank[g.level] > rank[best.level] || (rank[g.level] === rank[best.level] && g.score > best.score)) best = { ...g, heard: text.trim() };
+  });
+  dStop();
+  D.note = null; D.interim = ""; D.silent = 0;
+  if (!best || !best.heard) { D.note = "Mình chưa nghe rõ, hãy thử lại"; dLater(dListen, 900); drawDialog(); return; }
+  D.tries++;
+  practiceSessionReps++;
+  if (best.level === "correct") {
+    D.feedback = null;
+    vibrate(20);
+    dSetPhase("good");
+    dLater(dNext, 800);
+    return;
+  }
+  D.feedback = best.heard;
+  dSetPhase(best.level);
+  dLater(dListen, best.level === "near" ? 2000 : 2800);
+}
+function dFinish() {
+  const { t, d } = D;
+  D.phase = "done";
+  Outbox.push("complete_dialogue", { p_dialogue: d.id });
+  dialogueDone[d.id] = (dialogueDone[d.id] || 0) + 1;
+  confetti();
+  view.innerHTML = `<div class="screen stack fc-wrap" style="padding-top:8px">
+    <div class="empty" style="padding:18px 8px 4px"><div class="big">🎭</div>
+      <h1 class="title">Hoàn thành hội thoại!</h1><p class="muted">${esc(d.title_vi)}</p></div>
+    ${D.skipped ? `<div class="notice notice-warn">${ic("warn")}<div>Bạn đã bỏ qua ${D.skipped} lượt. Thử lại để nói trọn hội thoại nhé.</div></div>` : `<div class="notice notice-good">${ic("check")}<div>Bạn đã tự nói hết các lượt của mình. Tuyệt vời!</div></div>`}
+    <button class="btn btn-primary btn-lg btn-block" data-act="dAgain">${ic("redo")}Đóng vai lại, thử không nhìn câu</button>
+    <a class="btn btn-ghost btn-block" href="#/topic/${t.id}">Về chủ đề</a>
+  </div>`;
+}
+
+/* --- Nhắc học và cài đặt lên điện thoại --- */
+const pushSupported = () => "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+const isIOS = () => /iPhone|iPad|iPod/i.test(navigator.userAgent);
+const isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+let installEvent = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  installEvent = e;
+  if (currentRoute && currentRoute.name === "settings" && me) renderSettings();
+});
+window.addEventListener("appinstalled", () => { installEvent = null; toast("Đã cài Anna English!"); });
+function installSection() {
+  if (isStandalone()) return `<div class="notice notice-good">${ic("check")}<div>Bạn đang dùng bản đã cài trên thiết bị.</div></div>`;
+  if (installEvent) return `<button class="btn btn-primary btn-block" data-act="installApp">Cài lên thiết bị này</button>`;
+  if (isIOS()) return `<p class="small">Trên iPhone: mở trang này bằng Safari, nhấn nút <b>Chia sẻ</b>, rồi chọn <b>Thêm vào MH chính</b>.</p>`;
+  return `<p class="small">Trên Chrome: mở menu ⋮, chọn <b>Cài đặt ứng dụng</b> hoặc <b>Thêm vào màn hình chính</b>.</p>`;
+}
+function b64ToBytes(s) {
+  const raw = atob((s + "=".repeat((4 - s.length % 4) % 4)).replace(/-/g, "+").replace(/_/g, "/"));
+  return Uint8Array.from(raw, (c) => c.charCodeAt(0));
+}
+async function reminderState() {
+  if (!pushSupported()) return { supported: false };
+  const reg = await navigator.serviceWorker.getRegistration();
+  const sub = reg ? await reg.pushManager.getSubscription() : null;
+  if (!sub) return { supported: true, on: false };
+  const list = await rows(sb.from("push_subscriptions").select("remind_hour").eq("endpoint", sub.endpoint));
+  return { supported: true, on: list.length > 0, hour: list[0] ? list[0].remind_hour : 20, sub };
+}
+async function reminderOn(hour) {
+  if (await Notification.requestPermission() !== "granted") {
+    toast("Bạn chưa cho phép thông báo. Hãy bật trong cài đặt trình duyệt.");
+    return false;
+  }
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.getSubscription() || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(VAPID_PUBLIC_KEY) });
+  const j = sub.toJSON();
+  await rows(sb.from("push_subscriptions").upsert({ endpoint: j.endpoint, user_id: me.id, p256dh: j.keys.p256dh, auth: j.keys.auth, remind_hour: hour }).select("endpoint"));
+  return true;
+}
+async function reminderOff(sub) {
+  await rows(sb.from("push_subscriptions").delete().eq("endpoint", sub.endpoint));
+  await sub.unsubscribe();
+}
+function reminderSection(r) {
+  if (!r.supported) {
+    return isIOS() && !isStandalone()
+      ? `<p class="small">Trên iPhone, hãy cài app lên màn hình chính trước (iOS 16.4 trở lên), rồi mở app để bật nhắc học.</p>`
+      : `<p class="small muted">Trình duyệt này chưa hỗ trợ thông báo. Hãy dùng Chrome hoặc cài app lên màn hình chính.</p>`;
+  }
+  const hours = [7, 8, 12, 18, 19, 20, 21, 22];
+  const h = r.on ? r.hour : 20;
+  return `<label class="toggle"><span><b>Nhắc học mỗi ngày</b><br><span class="small muted">Chỉ nhắc nếu hôm đó bạn chưa học</span></span><input type="checkbox" id="remindToggle" ${r.on ? "checked" : ""}></label>
+    <label class="field"><span class="small muted">Giờ nhắc</span><select id="remindHour">${hours.map((x) => `<option value="${x}" ${x === h ? "selected" : ""}>${x}:00</option>`).join("")}</select></label>`;
+}
+
 /* ============================================================
    PHẦN 6: ĐĂNG NHẬP
    ============================================================ */
@@ -2074,6 +2435,10 @@ const badgeGrid = (earnedIds) => {
 };
 
 /* --- Trang chủ --- */
+function dueHref() {
+  const t = openTopics().find((x) => dueList(x).length);
+  return t ? `#/practice/${t.id}/${dueList(t)[0]}/due` : "#/train";
+}
 function renderHome() {
   page(async () => {
     await Outbox.flush();
@@ -2093,7 +2458,7 @@ function renderHome() {
     view.innerHTML = `<div class="screen stack">
       <header class="hero">
         <div class="row"><span class="avatar">${avatarOf(me)}</span><div><h1>Xin chào, ${esc(me.display_name)}!</h1><p class="muted">${esc(lv.code)} · ${esc(lv.cefr)}</p></div></div>
-        <div class="streak"><b>🔥 ${stats.streak}</b><span>ngày liên tiếp</span></div>
+        <div class="streak" title="Thẻ giữ chuỗi giúp không mất chuỗi khi bạn nghỉ. Học đủ 7 ngày liên tiếp được tặng thêm thẻ."><b>🔥 ${stats.streak}</b><span>ngày liên tiếp</span><span class="shield">🛡️ ${me.streak_freezes} thẻ giữ chuỗi</span></div>
       </header>
       <div class="home-grid">
         <div class="home-col stack">
@@ -2117,6 +2482,7 @@ function renderHome() {
           <section class="card"><p class="subtitle" style="margin-bottom:20px">Thời gian học 7 ngày qua (phút)</p>${chart7Days(sessions, me.daily_goal_min)}</section>
         </div>
         <div class="home-col stack">
+          ${dueCount() ? `<a class="card challenge-link" href="${dueHref()}"><span class="ico">${ic("clock")}</span><span class="grow"><b>Hôm nay cần ôn ${dueCount()} câu</b><br><span class="muted small">Ôn đúng lịch để nhớ lâu hơn</span></span>${ic("next")}</a>` : ""}
           ${reviewCount ? `<a class="card challenge-link" href="#/train"><span class="ico">${ic("redo")}</span><span class="grow"><b>Ôn ${reviewCount} câu chưa nhớ</b><br><span class="muted small">Luyện lại những câu còn khó</span></span>${ic("next")}</a>` : ""}
           <section class="card stack">
             <div class="row between"><p class="subtitle">Bạn bè</p><a class="small link-more" href="#/friends">Xem tất cả</a></div>
@@ -2209,6 +2575,7 @@ function renderFinish(topicId) {
       ${step(speakOk, 1, "Luyện nói", `${done}/${t.sentences.length} câu`, open >= 0 ? `#/practice/${t.id}/${open}` : `#/practice/${t.id}/0/all`, speakOk ? "Ôn" : "Học", nextStep === 1)}
       ${step(wordOk, 2, "Từ vựng", `Đã nhớ ${known}/${t.words.length}, cần ${wordsNeeded(t)}`, `#/vocab/${t.id}`, wordOk ? "Ôn" : "Học", nextStep === 2)}
       ${step(testOk, 3, "Bài kiểm tra", res ? `Điểm cao nhất ${res.best_score}%, cần 80%` : "Cần đạt từ 80%", `#/quiz/topic/${t.id}`, testOk ? "Làm lại" : "Làm bài", nextStep === 3)}
+      ${t.dialogue ? `<a class="card challenge-link" href="#/dialog/${t.id}"><span class="ico">🎭</span><span class="grow"><b>Hội thoại đóng vai</b><br><span class="muted small">${esc(t.dialogue.title_vi)} · Không bắt buộc${dialogueDone[t.dialogue.id] ? " · Đã làm " + dialogueDone[t.dialogue.id] + " lần" : ""}</span></span>${ic("next")}</a>` : ""}
       <div class="tiles">
         <div class="tile"><b>${attempts}</b><span>lần thử</span></div>
         <div class="tile"><b>${firstRate === null ? "–" : firstRate + "%"}</b><span>đúng ngay lần đầu</span></div>
@@ -2227,10 +2594,14 @@ function renderTrain() {
     view.innerHTML = `<div class="screen">${pageHead("Luyện tập", "Tiếp tục bài đang học hoặc ôn lại phần còn khó.")}
       <div class="stack">
         <a class="btn btn-primary btn-lg btn-block" href="${target.href}">${ic("mic")}${esc(target.label)}</a>
+        ${dueCount() ? `<a class="btn btn-soft btn-lg btn-block" href="${dueHref()}">${ic("clock")}Ôn theo lịch hôm nay (${dueCount()} câu)</a>` : ""}
         <section class="card stack"><p class="subtitle">Câu cần ôn</p>
           ${withReview.length ? withReview.map((t) => `<a class="row friend-line" href="#/practice/${t.id}/${reviewList(t)[0]}/review">
               <span class="topic-ico" aria-hidden="true">${t.icon}</span><span style="flex:1;min-width:0"><b>${esc(t.title_vi)}</b><br><span class="small muted">${reviewList(t).length} câu</span></span>${ic("next")}</a>`).join("")
             : `<p class="muted small">Chưa có câu nào cần ôn. Giỏi lắm!</p>`}
+        </section>
+        <section class="card stack"><p class="subtitle">Hội thoại đóng vai</p>
+          ${openTopics().filter((t) => t.dialogue).map((t) => `<a class="row friend-line" href="#/dialog/${t.id}"><span class="topic-ico" aria-hidden="true">${t.icon}</span><span style="flex:1;min-width:0"><b>${esc(t.dialogue.title_vi)}</b><br><span class="small muted">${esc(t.title_vi)}${dialogueDone[t.dialogue.id] ? " · Đã đóng vai " + dialogueDone[t.dialogue.id] + " lần" : ""}</span></span>${ic("next")}</a>`).join("")}
         </section>
         <a class="card challenge-link" href="#/vocab"><span class="ico">${ic("cards")}</span><span class="grow"><b>Thẻ từ vựng</b><br><span class="muted small">Học và ôn từ theo chủ đề</span></span>${ic("next")}</a>
       </div></div>`;
@@ -2292,7 +2663,8 @@ async function submitQuiz() {
   }
 }
 function drawQuizResult(r, before) {
-  const wrong = Q.questions.filter((q) => r.wrong.includes(q.id));
+  const wrong = r.review.map((x) => ({ q: Q.questions.find((q) => q.id === x.id), answer: x.answer })).filter((x) => x.q)
+    .sort((a, b) => a.q.position - b.q.position);
   const levelPassed = !Q.isTopic && r.passed;
   const nextLv = levelPassed ? LEVELS.find((l) => l.id > Q.lv.id) : null;
   const newlyOpen = nextLv && !before[nextLv.id] && levelRows[nextLv.id];
@@ -2305,7 +2677,12 @@ function drawQuizResult(r, before) {
       <p class="muted">Đúng ${r.correct}/${r.total} câu · Cần từ 80%</p>
     </div>
     ${newlyOpen ? `<div class="notice notice-good">${ic("check")}<div><b>Đã mở khóa ${esc(nextLv.code)}</b>${esc(nextLv.title_vi)}</div></div>` : ""}
-    ${wrong.length ? `<section class="card stack" style="gap:8px"><p class="subtitle">Câu cần xem lại</p>${wrong.map((q) => `<p class="small">${esc(q.audio_text ? q.prompt + ": " + q.audio_text : q.prompt)}</p>`).join("")}</section>` : ""}
+    ${wrong.length ? `<section class="card stack" style="gap:8px"><p class="subtitle">Câu cần xem lại</p>${wrong.map(({ q, answer }) => `<div class="review-q">
+        <p class="small">${esc(q.prompt)}</p>
+        <p class="small"><span class="w-bad">Bạn chọn: ${esc(Q.answers[q.id] || "Chưa chọn")}</span></p>
+        <p class="small"><b class="w-ok">${ic("check")} Đáp án đúng: ${esc(answer)}</b></p>
+        ${q.audio_text ? `<button class="btn btn-soft" data-act="say" data-text="${esc(q.audio_text)}"><span data-icon>${ic("play")}</span><span data-label>Nghe lại</span></button>` : ""}
+      </div>`).join("")}</section>` : ""}
     ${r.passed ? "" : `<a class="btn btn-primary btn-lg btn-block" href="${Q.back}" data-act="quizRetry">${ic("redo")}Làm lại</a>`}
     ${newlyOpen ? `<a class="btn btn-primary btn-lg btn-block" href="#/level/${nextLv.id}">${ic("next")}Vào ${esc(nextLv.code)}</a>` : `<a class="btn ${r.passed ? "btn-primary" : "btn-ghost"} btn-block" href="${Q.back}">${r.passed ? "Tiếp tục" : "Quay lại ôn tập"}</a>`}
   </div>`;
@@ -2522,7 +2899,13 @@ function renderHistory() {
   });
 }
 function renderSettings() {
-  page(async () => (await rows(sb.from("shared_progress_settings").select("*").eq("user_id", me.id)))[0], (s) => {
+  page(async () => {
+    const [list, remind] = await Promise.all([
+      rows(sb.from("shared_progress_settings").select("*").eq("user_id", me.id)),
+      reminderState().catch(() => ({ supported: false }))
+    ]);
+    return { s: list[0], remind };
+  }, ({ s, remind }) => {
     const toggle = (key, label, sub) => `<label class="toggle"><span><b>${label}</b><br><span class="small muted">${sub}</span></span><input type="checkbox" data-share="${key}" ${s[key] ? "checked" : ""}></label>`;
     const goalBtn = (m) => `<button data-act="setGoal" data-min="${m}" aria-pressed="${me.daily_goal_min === m}">${m} phút</button>`;
     const scaleBtn = (k, label) => `<button data-act="setScale" data-scale="${k}" aria-pressed="${state.scale === k}">${label}</button>`;
@@ -2536,6 +2919,9 @@ function renderSettings() {
           ${toggle("share_tests", "Kết quả kiểm tra", "Điểm các bài kiểm tra level")}
           ${toggle("share_achievements", "Thành tích", "Huy hiệu và thông báo khi vượt level")}
         </section>
+        <section class="card stack"><p class="subtitle">Nhắc học</p>${reminderSection(remind)}</section>
+        <section class="card stack"><p class="subtitle">Cài lên điện thoại</p><p class="small muted">Mở nhanh từ màn hình chính như một ứng dụng.</p>${installSection()}</section>
+        <section class="card stack"><p class="subtitle">Thẻ giữ chuỗi: 🛡️ ${me.streak_freezes}</p><p class="small muted">Lỡ nghỉ, thẻ tự được dùng để giữ chuỗi. Học đủ 7 ngày liên tiếp được tặng 1 thẻ, giữ tối đa 2 thẻ.</p></section>
         <section class="card stack"><p class="subtitle">Học tập</p>
           <div><p class="small muted" style="margin-bottom:4px">Mục tiêu mỗi ngày</p><div class="seg">${goalBtn(10)}${goalBtn(15)}${goalBtn(20)}</div></div>
           <div><p class="small muted" style="margin-bottom:4px">Cỡ chữ</p><div class="seg">${scaleBtn("md", "Vừa")}${scaleBtn("lg", "Lớn")}${scaleBtn("xl", "Rất lớn")}</div></div>
@@ -2555,6 +2941,30 @@ function renderSettings() {
       try { await rows(sb.from("shared_progress_settings").update(patch).eq("user_id", me.id).select("user_id")); toast("Đã lưu."); }
       catch (err) { el.checked = !el.checked; toast(errorText(err)); }
     }));
+    const remindBox = $("#remindToggle");
+    if (remindBox) {
+      const hourOf = () => parseInt($("#remindHour").value, 10);
+      remindBox.addEventListener("change", async () => {
+        remindBox.disabled = true;
+        try {
+          if (remindBox.checked) {
+            const ok = await reminderOn(hourOf());
+            remindBox.checked = ok;
+            if (ok) toast(`Mình sẽ nhắc bạn lúc ${hourOf()}:00 nếu hôm đó bạn chưa học.`);
+          } else {
+            const st = await reminderState();
+            if (st.sub) await reminderOff(st.sub);
+            toast("Đã tắt nhắc học.");
+          }
+        } catch (err) { remindBox.checked = !remindBox.checked; toast("Chưa cài đặt được nhắc học. Hãy thử lại."); }
+        remindBox.disabled = false;
+      });
+      $("#remindHour").addEventListener("change", async () => {
+        if (!remindBox.checked) return;
+        try { await reminderOn(hourOf()); toast(`Đã đổi giờ nhắc sang ${hourOf()}:00.`); }
+        catch (err) { toast(errorText(err)); }
+      });
+    }
     $("#passForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const p = $("#newPass").value;
@@ -2570,6 +2980,19 @@ function renderSettings() {
 /* ============================================================
    PHẦN 8: THAO TÁC
    ============================================================ */
+/* Thử lại sau lỗi hội thoại: tiếp tục đúng lượt đang dở thay vì bắt đầu lại */
+async function dStart2() {
+  if (!D) return;
+  if (D.pos < 0) { dStart(); return; }
+  const owner = D, run = ++D.run;
+  try { await ensureMic(); }
+  catch (code) { if (D === owner && D.run === run) { D.errCode = code; dSetPhase("error"); } return; }
+  if (D === owner && D.run === run) dUserOrNext();
+}
+function dUserOrNext() {
+  const line = D.d.lines[D.pos];
+  if (line && line.speaker === "user") dUserTurn(); else dNext();
+}
 const quickAct = (fn) => async (el) => {
   el.disabled = true;
   try { await fn(el); } catch (e) { toast(errorText(e)); el.disabled = false; }
@@ -2587,7 +3010,7 @@ const Actions = {
   /* Luyện câu */
   startLesson, playModel, goListen,
   retryLesson() { micReady = false; startLesson(); },
-  pauseLesson, skipSentence,
+  pauseLesson, skipSentence, playVoice,
   setSpeed(el) {
     state.speed = el.dataset.speed;
     save();
@@ -2602,6 +3025,40 @@ const Actions = {
   pickSentence() { if (P) { pauseIfActive(); openPicker(); } },
   jumpSentence(el) { closeSheet(); gotoSentence(parseInt(el.dataset.i, 10)); },
   guide() { pauseIfActive(); openGuide(); },
+
+  /* Hội thoại */
+  dStart,
+  dResume() { if (D) { const line = D.d.lines[D.pos]; if (!line) dStart(); else if (line.speaker === "app") dSpeakApp(line); else dUserTurn(); } },
+  dRetry() { micReady = false; dStart2(); },
+  dUseManual() { if (D) { D.useManual = true; dStop(); dUserOrNext(); } },
+  dListen,
+  dPause() { if (D) { dStop(); dSetPhase("paused"); } },
+  dManual() { if (D) dNext(); },
+  dSkip() { if (D) { D.skipped++; dNext(); } },
+  dReplay() {
+    if (!D) return;
+    dStop();
+    // Phát lại câu gần nhất của đối phương; xong thì quay lại lượt hiện tại
+    const shown = D.d.lines.slice(0, D.pos + 1).filter((l) => l.speaker === "app");
+    const last = shown[shown.length - 1];
+    if (!last) { dListen(); return; }
+    dSetPhase("app");
+    const owner = D, run = D.run;
+    Speech.speak(last.en, SPEEDS[state.speed].rate).then((r) => {
+      if (D !== owner || D.run !== run || r === "canceled") return;
+      const line = D.d.lines[D.pos];
+      if (line.speaker === "app") dLater(dNext, 300); else dLater(dUserTurn, 300);
+    });
+  },
+  dToggleEn() { if (D) { D.hideEn = !D.hideEn; drawDialog(); } },
+  dAgain() { if (D) { const hide = true; renderDialog(D.t.id); D.hideEn = hide; drawDialog(); } },
+  async installApp() {
+    if (!installEvent) return;
+    installEvent.prompt();
+    await installEvent.userChoice;
+    installEvent = null;
+    renderSettings();
+  },
 
   /* Từ vựng */
   flip: flipCard,
@@ -2689,7 +3146,7 @@ const NAV_ITEMS = [
   { key: "friends", href: "#/friends", label: "Bạn bè", icon: "smile" },
   { key: "me", href: "#/me", label: "Cá nhân", icon: "user" }
 ];
-const NAV_GROUP = { level: "path", topic: "path", quiz: "path", vocab: "train", friend: "friends", rank: "friends", notices: "friends", history: "me", settings: "me" };
+const NAV_GROUP = { level: "path", topic: "path", quiz: "path", vocab: "train", dialog: "train", friend: "friends", rank: "friends", notices: "friends", history: "me", settings: "me" };
 function renderNav(active) {
   $("#navLinks").innerHTML = NAV_ITEMS.map((n) =>
     `<a class="link" href="${n.href}" ${n.key === active ? 'aria-current="page"' : ""}>${ic(n.icon)}${n.label}</a>`).join("");
@@ -2700,6 +3157,7 @@ function route() {
   routeTicket++;
   closeSheet();
   cleanupPractice();
+  cleanupDialog();
   Speech.cancel();
   if (!me) return;
   const [name = "home", a, b, c] = location.hash.replace(/^#\/?/, "").split("/").map((x) => decodeURIComponent(x));
@@ -2710,7 +3168,7 @@ function route() {
     practiceSessionReps = 0; autoRun = false; lessonSeen = new Set();
   }
   const vocabSession = name === "vocab" && a;
-  const learning = name === "practice" || vocabSession;
+  const learning = name === "practice" || name === "dialog" || vocabSession;
   if (learning || name === "quiz") document.body.dataset.focus = "1"; else delete document.body.dataset.focus;
   const sameScreen = currentRoute.name === name && name === "practice";
   currentRoute = { name, learning: !!learning };
@@ -2724,6 +3182,7 @@ function route() {
     case "practice": renderPractice(a, b, c); break;
     case "vocab": a ? renderVocabSession(a) : renderVocabHome(); break;
     case "quiz": renderQuiz(a, b); break;
+    case "dialog": renderDialog(a); break;
     case "friends": renderFriends(); break;
     case "friend": renderFriend(a); break;
     case "rank": renderRank(); break;
@@ -2764,8 +3223,9 @@ document.addEventListener("visibilitychange", () => {
     stopPlayback();
     pauseIfActive();
   }
+  if (D && !["ready", "paused", "done", "error", "manual"].includes(D.phase)) { dStop(); dSetPhase("paused"); }
 });
-window.addEventListener("pagehide", () => { sendStudyTime(); Recog.stop(); Mic.stop(true); Speech.cancel(); });
+window.addEventListener("pagehide", () => { sendStudyTime(); cleanupDialog(); Recog.stop(); Mic.stop(true); Speech.cancel(); });
 
 /* ============================================================
    PHẦN 11: KHỞI ĐỘNG
@@ -2784,6 +3244,13 @@ async function enterApp(user) {
     const unread = await sb.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", me.id).is("read_at", null);
     unreadNotices = unread.count || 0;
     listenNotifications();
+    // Lỡ nghỉ thì tự dùng thẻ giữ chuỗi; học đủ 7 ngày thì được tặng thẻ
+    try {
+      const st = await rpc("sync_streak");
+      me.streak_freezes = st.freezes;
+      if (st.used) toast(`🛡️ Đã dùng ${st.used} thẻ để giữ chuỗi ${st.streak} ngày của bạn.`);
+      else if (st.awarded) toast("🛡️ Bạn được tặng 1 thẻ giữ chuỗi!");
+    } catch (e) { /* không ảnh hưởng việc học */ }
     route();
   } catch (e) {
     me = null;
@@ -2797,11 +3264,15 @@ function leaveApp() {
   me = null;
   routeTicket++;
   cleanupPractice();
+  cleanupDialog();
   if (realtimeChannel) { sb.removeChannel(realtimeChannel); realtimeChannel = null; }
   state.sp = {}; state.words = {};
   levelRows = {}; topicRows = {};
   authMode = "login";
   renderAuth();
+}
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
 }
 loadPrefs();
 applyScale();
